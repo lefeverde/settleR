@@ -20,4 +20,5 @@ Suggests:
 Depends: 
     dplyr,
     ggplot2,
-    tibble
+    tibble,
+    grid

@@ -53,25 +53,55 @@ sets_to_matrix <- function(setlist){
 #'
 #'
 #' @param binary_mat
+#' @param intersect_levels
+#' @param set_levels
 #'
 #' @return
 #' @export
 #'
 #' @examples
-calc_set_overlaps <- function(binary_mat){
+calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL,nintersects=100){
 
-  cnt_df <- plyr::count(binary_mat)
+  cnt_df <- plyr::count(binary_mat) %>%
+    arrange(., desc(freq)) %>%
+    dplyr::slice(., 1:nintersects)
   row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
 
   colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
 
+  # Data for X-top margin plot
   intersect_data <- data.frame(intersect_set_size=cnt_df$freq,
                                intersect_degree=rowSums(cnt_df[,seq(1, ncol(cnt_df) -1 )])) %>%
     rownames_to_column(., 'intersect_id')
+  if(is.null(intersect_levels)){
+    intersect_levels <-
+      dplyr::arrange(intersect_data, desc(intersect_set_size)) %>%
+      pull(1)
+  }
 
+  intersect_data$intersect_id <- factor(intersect_data$intersect_id,
+                                        levels=intersect_levels)
+  intersect_data <-
+    dplyr::arrange(intersect_data, intersect_id) %>%
+    cbind(x=seq(1, nrow(.)), .)
+
+
+  # Data for Y-right margin plot
   set_totals <- data.frame(colSums(binary_mat)) %>%
     rownames_to_column(.) %>%
     setNames(., c('set_names', 'total_set_size'))
+  if(is.null(set_levels)){
+    set_levels <-
+      dplyr::arrange(set_totals, total_set_size) %>%
+      pull(1)
+  }
+  set_totals$set_names <- factor(set_totals$set_names,
+                                 levels=set_levels)
+  set_totals <-
+    dplyr::arrange(set_totals, set_names) %>%
+    cbind(y=seq(1, nrow(.)), .)
+
+
 
   grid_data <- cnt_df[,seq(1, ncol(cnt_df) -1)] %>%
     as.matrix(.) %>%
@@ -80,17 +110,21 @@ calc_set_overlaps <- function(binary_mat){
   # observed is basically a variable stating whether
   # the row combinations exists in the original data
   grid_data$observed <- as.logical(grid_data$observed)
+  grid_data$set_names <- factor(grid_data$set_names,
+                                levels=set_levels)
+  grid_data$intersect_id <- factor(grid_data$intersect_id,
+                                   levels=intersect_levels)
 
-  # ol <- list(grid_data, intersect_data, set_totals) %>%
-  #   setNames(., c('grid_data', 'intersect_data', 'set_totals'))
-  # return(ol)
+  ol <- list(grid_data, intersect_data, set_totals) %>%
+    setNames(., c('grid_data', 'intersect_data', 'set_totals'))
+  return(ol)
 
   # Merging DFs into longish df
-  out_df <- merge(grid_data, intersect_data,
-                  all = T,
-                  by = 'intersect_id')
-  out_df <-  merge(set_totals, out_df, by='set_names')
-  return(out_df)
+  # out_df <- merge(grid_data, intersect_data,
+  #                 all = T,
+  #                 by = 'intersect_id')
+  # out_df <-  merge(set_totals, out_df, by='set_names')
+  # return(out_df)
 
 
 }

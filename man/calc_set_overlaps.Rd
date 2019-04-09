@@ -4,11 +4,19 @@
 \alias{calc_set_overlaps}
 \title{Creates df of upset data}
 \usage{
-calc_set_overlaps(binary_mat)
+calc_set_overlaps(binary_mat, intersect_levels = NULL,
+  set_levels = NULL, nintersects = 100)
 }
 \arguments{
-\item{binary_mat}{}
+\item{set_levels}{}
 }
 \description{
-Creates df of upset data
+This formats the resulting data to long(ish)
+formatted data. The reason why I've tried
+put everything in 1 data.frame is so that
+I can set the factors once in a single object.
+It's currently adding more work to the uspset
+wrapper since I have to essentially split this
+into seperate objects, but I think it's worth
+it so that I don't have to always think about the factors.
 }

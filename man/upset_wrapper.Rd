@@ -4,7 +4,7 @@
 \alias{upset_wrapper}
 \title{Wrapper to align and put the plots together}
 \usage{
-upset_wrapper(bm)
+upset_wrapper(ol)
 }
 \arguments{
 \item{ol}{}

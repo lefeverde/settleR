@@ -13,5 +13,7 @@ sets_to_matrix(setlist)
 binary matrix
 }
 \description{
-Converts list of sets into a binary matrix
+This creates a matrix simliar to that in the UpSetR
+package but I've removed a lot of the unneeded code.
+I've also added a few helpful errors here.
 }
