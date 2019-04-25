@@ -1,24 +1,27 @@
 Package: settleR
-Title: What the Package Does (One Line, Title Case)
+Title: A package for creating customizable UpSet plots
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
+Authors@R:
+    person(given = "Dan",
+           family = "Lefever",
            role = c("aut", "cre"),
-           email = "first.last@example.com")
+           email = "lefeverde@gmail.com")
 Description: What the package does (one paragraph).
-License: What license it uses
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
-Imports: 
+Imports:
     magrittr,
-    reshape2
-Suggests: 
+    reshape2,
+    cowplot,
+    plyr,
+    grid,
+    ggrepel
+Suggests:
     testthat
-Depends: 
+Depends:
     dplyr,
     ggplot2,
-    tibble,
-    grid
+    tibble

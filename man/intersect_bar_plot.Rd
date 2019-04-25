@@ -7,7 +7,7 @@
 intersect_bar_plot(intersect_data)
 }
 \arguments{
-\item{intersect_data}{}
+\item{intersect_data}{data.frame with x, intersect_id, intersect_set_size, and intersect_degree as columns}
 }
 \description{
 Creates bar plot of the intersects

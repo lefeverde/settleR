@@ -52,21 +52,22 @@ sets_to_matrix <- function(setlist){
 #'
 #'
 #'
-#' @param binary_mat
-#' @param intersect_levels
-#' @param set_levels
+#' @param binary_mat Binary matrix from \link[settleR]{sets_to_matrix}
+#' @param intersect_levels Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.
+#' @param set_levels Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.
+#' @param nintersects Integer number of intersects to show
 #'
 #' @return
 #' @export
 #'
 #' @examples
-calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL,nintersects=100){
+calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL, nintersects=100){
 
   cnt_df <- plyr::count(binary_mat) %>%
     arrange(., desc(freq)) %>%
     dplyr::slice(., 1:nintersects)
+  cnt_df <- cnt_df[seq_len(min(intersect_levels, nrow(cnt_df))),]
   row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
-
   colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
 
   # Data for X-top margin plot
@@ -79,8 +80,7 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
       pull(1)
   }
 
-  intersect_data$intersect_id <- factor(intersect_data$intersect_id,
-                                        levels=intersect_levels)
+  intersect_data$intersect_id <- factor(intersect_data$intersect_id, levels=intersect_levels)
   intersect_data <-
     dplyr::arrange(intersect_data, intersect_id) %>%
     cbind(x=seq(1, nrow(.)), .)
