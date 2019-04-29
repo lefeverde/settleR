@@ -63,10 +63,15 @@ sets_to_matrix <- function(setlist){
 #' @examples
 calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL, nintersects=100){
 
+  # if intersect_levels are specified, then
+  # do not filter any of the non-zero intersects
+  if(!is.null(intersect_levels)){
+    nintersects <- Inf
+  }
+
   cnt_df <- plyr::count(binary_mat) %>%
-    arrange(., desc(freq)) %>%
-    dplyr::slice(., 1:nintersects)
-  cnt_df <- cnt_df[seq_len(min(intersect_levels, nrow(cnt_df))),]
+    arrange(., desc(freq))
+  cnt_df <- cnt_df[seq_len(min(nintersects, nrow(cnt_df))),]
   row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
   colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
 
@@ -126,5 +131,55 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
   # out_df <-  merge(set_totals, out_df, by='set_names')
   # return(out_df)
 
+
+}
+
+#' Returns vector of intersect levels
+#'
+#' Intersect levels are reordered such that the
+#' exclusive  singleton sets are the first n
+#' number of intersects and the remaining are
+#' ordered from largest to smallest like normal.
+#'
+#' @inheritParams sets_to_matrix
+#' @inheritParams calc_set_overlaps
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_reordered_intersect_lvls <- function(setlist,
+                                         set_levels,
+                                         nintersects=15){
+  original_intersects <- sets_to_matrix(setlist) %>%
+    calc_set_overlaps(.,
+                      set_levels = set_levels,
+                      nintersects = nintersects) %>%
+    .[['intersect_data']] %>%
+    pull(2) %>%
+    as.character(.)
+
+  all_inter_list <- sets_to_matrix(setlist) %>%
+    calc_set_overlaps(.,
+                      set_levels = set_levels,
+                      nintersects = Inf)
+  all_gd <- all_inter_list[["grid_data"]] %>%
+    filter(., observed)
+
+  singleton_intersects <- all_gd %>%
+    group_by(., intersect_id) %>%
+    summarise(., deg=n()) %>%
+    filter(., deg==1)
+  singleton_intersects$set_names <-
+    all_gd$set_names[match(singleton_intersects$intersect_id,                                              all_gd$intersect_id)]
+  singleton_intersects <- singleton_intersects %>%
+    arrange(., set_names) %>%
+    pull(1) %>%
+    as.character(.)
+
+  original_intersects <-
+    original_intersects[!original_intersects %in% singleton_intersects]
+  intersect_lvls <- c(singleton_intersects, original_intersects)
+  return(intersect_lvls)
 
 }

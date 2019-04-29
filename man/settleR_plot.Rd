@@ -5,7 +5,7 @@
 \title{Creates a settleR plot starting from a named list of sets}
 \usage{
 settleR_plot(setlist, nintersects = 15, set_levels = NULL,
-  col_map = NULL, grid_size = 0.75)
+  col_map = NULL, marg_size = 5)
 }
 \arguments{
 \item{setlist}{list of sets}
@@ -16,7 +16,7 @@ settleR_plot(setlist, nintersects = 15, set_levels = NULL,
 
 \item{col_map}{optional named vector specifying text colours of y-axis labels}
 
-\item{grid_size}{sets grid size}
+\item{marg_size}{sets height or width of plots in margin size in cm}
 }
 \description{
 Creates a settleR plot starting from a named list of sets

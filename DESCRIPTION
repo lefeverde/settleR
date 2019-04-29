@@ -1,6 +1,6 @@
 Package: settleR
 Title: A package for creating customizable UpSet plots
-Version: 0.0.0.9000
+Version: 0.0.1.9000
 Authors@R:
     person(given = "Dan",
            family = "Lefever",
@@ -13,12 +13,13 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Imports:
-    magrittr,
     reshape2,
     cowplot,
     plyr,
     grid,
-    ggrepel
+    ggrepel,
+    magrittr,
+    gtable
 Suggests:
     testthat
 Depends:

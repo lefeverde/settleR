@@ -14,14 +14,41 @@ settleR_plot <- function(setlist,
                          nintersects = 15,
                          set_levels=NULL,
                          col_map=NULL,
-                         grid_size=.75){
+                         marg_size=5){
   upset_list <- sets_to_matrix(setlist) %>%
     calc_set_overlaps(.,
                       nintersects=nintersects,
                       set_levels=set_levels)
   upset_plt <- make_upset_plots(upset_list, col_map) %>%
-    merge_upset_list
+    merge_upset_list(.,)
   return(upset_plt)
+}
+
+#' wrapper to save the upset plot created by settleR_plot
+#'
+#' Essentially, this is just a wrapper around ggsave. The difference is that
+#' plot size is automatically calculated.
+#' @param upset_plt an upset_plt gtabl object
+#' @param fn file name
+#'
+#' @importFrom magrittr multiply_by
+#' @importFrom gtable gtable_height gtable_width
+#' @importFrom grid convertHeight
+#' @return
+#' @export
+#'
+#' @examples
+settleR_save <- function(upset_plt, fn){
+  hght <- gtable_height(upset_plt) %>%
+    convertHeight(., 'cm', valueOnly = TRUE) %>%
+    multiply_by(1.05) %>%
+    round(., 1)
+  wdth <- gtable_width(upset_plt) %>%
+    convertHeight(., 'cm', valueOnly = TRUE) %>%
+    multiply_by(1.05) %>%
+    round(., 1)
+  ggsave(fn, upset_plt, width = wdth, height = hght, units = 'cm')
+
 }
 
 #' Creates ggplot bars of set size
@@ -91,7 +118,7 @@ intersect_bar_plot <- function(intersect_data){
                                    y=1.05,
                                    hjust=0,
                                    gp=gpar(col="black",
-                                           fontsize=20,
+                                           fontsize=18,
                                            fontface="bold")))
   p <- p + annotation_custom(axis_title)
   return(p)
@@ -141,9 +168,9 @@ grid_dot_plot <- function(grid_data, dot_size=5, col_map=NULL){
   # adds a numeric index to x axis
   p <- p + scale_x_discrete(labels=(seq(1, nrow(grid_data)))) +
     theme(aspect.ratio = .5,
-          axis.text.y = element_text(size=dot_size*3,
+          axis.text.y = element_text(size=dot_size*2,
                                      face='bold'),
-          axis.text.x = element_text(size=dot_size*3,
+          axis.text.x = element_text(size=dot_size*2,
                                      face='bold')
   )
   return(p)
@@ -170,8 +197,20 @@ make_upset_plots <- function(upset_list, col_map=NULL){
     stop('upset_list needs to be a named list with data.frames named: grid_data, intersect_data, and set_totals')
   }
 
+  grid_dims <- upset_list$grid_data %>%
+    filter(., observed) %>%
+    summarise(n_distinct(intersect_id),
+              n_distinct(set_names)) %>%
+    setNames(., c('x', 'y'))
+
+
   pmain <- grid_dot_plot(upset_list$grid_data,
-                         col_map = col_map)
+                         col_map = col_map) %>%
+    ggplotGrob(.) %>%
+    set_panel_size(.,
+                   width = .75*grid_dims$x,
+                   height = .75*grid_dims$y)
+
 
   x_marg_plot <- intersect_bar_plot(upset_list$intersect_data)
   y_marg_plot <- set_totals_bar_plot(upset_list$set_totals)
@@ -186,27 +225,60 @@ make_upset_plots <- function(upset_list, col_map=NULL){
 #' Merges list of ggplot upset into gtable object
 #'
 #' @param upset_list list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured
-#' @param grid_size sets grid size
+#' @param marg_size sets height or width of plots in margin size in cm
 #'
 #' @return
 #' @export
 #'
 #' @examples
-merge_upset_list <- function(upset_list, grid_size=.75){
+merge_upset_list <- function(upset_list, marg_size=5){
 
   plt_w_marg <-
     cowplot::insert_xaxis_grob(upset_list$pmain,
                                upset_list$x_marg_plot,
                                position = 'top',
-                               height = grid::unit(grid_size,
-                                                   "null")) %>%
+                               height = grid::unit(marg_size,
+                                                   'cm')) %>%
 
     cowplot::insert_yaxis_grob(.,
                                upset_list$y_marg_plot,
                                position = 'right',
-                               width = grid::unit(grid_size,
-                                                  "null"))
+                               width = grid::unit(marg_size,
+                                                  'cm'))
   return(plt_w_marg)
+}
+
+
+
+
+#' Fixes size of ggplot grob object
+#'
+#' This sets the size of ggplot grob object to fixed
+#' sizes. I've adapted this from \url{https://stackoverflow.com/a/30571289}.
+#' The height and width parameters are in cm. May change in future.
+#'
+#' @param g a gtable object returned from \code{\link[ggplot2]{ggplotGrob}}
+#' @param width an int
+#' @param height also an int
+#'
+#' @return gtable object
+#' @export
+#'
+#' @examples
+set_panel_size <- function(g, width=4, height=4){
+  width <- unit(width, "cm")
+  height <- unit(height, "cm")
+  panels <- grep("panel", g$layout$name)
+  panel_index_w<- unique(g$layout$l[panels])
+  panel_index_h<- unique(g$layout$t[panels])
+  nw <- length(panel_index_w)
+  nh <- length(panel_index_h)
+
+  g$widths[panel_index_w] <-  rep(width,  nw)
+  g$heights[panel_index_h] <- rep(height, nh)
+
+
+  return(g)
 }
 
 
