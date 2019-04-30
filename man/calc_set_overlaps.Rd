@@ -5,7 +5,7 @@
 \title{Creates df of upset data}
 \usage{
 calc_set_overlaps(binary_mat, intersect_levels = NULL,
-  set_levels = NULL, nintersects = 100)
+  set_levels = NULL, nintersects = 15)
 }
 \arguments{
 \item{binary_mat}{Binary matrix from \link[settleR]{sets_to_matrix}}

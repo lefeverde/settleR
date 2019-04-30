@@ -11,7 +11,7 @@
 #'
 #' @examples
 settleR_plot <- function(setlist,
-                         nintersects = 15,
+                         nintersects=15,
                          set_levels=NULL,
                          col_map=NULL,
                          marg_size=5){
@@ -41,11 +41,11 @@ settleR_plot <- function(setlist,
 settleR_save <- function(upset_plt, fn){
   hght <- gtable_height(upset_plt) %>%
     convertHeight(., 'cm', valueOnly = TRUE) %>%
-    multiply_by(1.05) %>%
+    multiply_by(1.125) %>%
     round(., 1)
   wdth <- gtable_width(upset_plt) %>%
     convertHeight(., 'cm', valueOnly = TRUE) %>%
-    multiply_by(1.05) %>%
+    multiply_by(1.125) %>%
     round(., 1)
   ggsave(fn, upset_plt, width = wdth, height = hght, units = 'cm')
 
@@ -80,7 +80,7 @@ set_totals_bar_plot <- function(set_totals){
                                    y=1.05,
                                    hjust=0,
                                    gp=gpar(col="black",
-                                           fontsize=20,
+                                           fontsize=15,
                                            fontface="bold")))
   p <- p + annotation_custom(axis_title)
 
@@ -135,7 +135,7 @@ intersect_bar_plot <- function(intersect_data){
 #' @export
 #'
 #' @examples
-grid_dot_plot <- function(grid_data, dot_size=5, col_map=NULL){
+grid_dot_plot <- function(grid_data, dot_size=6.25, col_map=NULL){
 
   v_breaks <- seq(1,length(unique(grid_data$intersect_id)) -1, by = 1)+ .5
   h_breaks <- seq(1,length(unique(grid_data$set_names)) - 1, by = 1)+ .5
@@ -186,30 +186,20 @@ grid_dot_plot <- function(grid_data, dot_size=5, col_map=NULL){
 #'
 #' @param upset_list list of data.frames from \link[settleR]{calc_set_overlaps}
 #' @param col_map optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}
-#'
+#' @importFrom stats setNames
 #' @return
 #' @export
 #'
 #' @examples
 make_upset_plots <- function(upset_list, col_map=NULL){
 
-  if(!all(names(upset_list) %in% c("grid_data",      "intersect_data","set_totals"))){
+  if(!all(names(upset_list) %in% c("grid_data","intersect_data","set_totals"))){
     stop('upset_list needs to be a named list with data.frames named: grid_data, intersect_data, and set_totals')
   }
 
-  grid_dims <- upset_list$grid_data %>%
-    filter(., observed) %>%
-    summarise(n_distinct(intersect_id),
-              n_distinct(set_names)) %>%
-    setNames(., c('x', 'y'))
-
-
   pmain <- grid_dot_plot(upset_list$grid_data,
-                         col_map = col_map) %>%
-    ggplotGrob(.) %>%
-    set_panel_size(.,
-                   width = .75*grid_dims$x,
-                   height = .75*grid_dims$y)
+                         col_map = col_map)
+
 
 
   x_marg_plot <- intersect_bar_plot(upset_list$intersect_data)
@@ -224,24 +214,40 @@ make_upset_plots <- function(upset_list, col_map=NULL){
 
 #' Merges list of ggplot upset into gtable object
 #'
-#' @param upset_list list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured
+#' @param plt_list list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured
 #' @param marg_size sets height or width of plots in margin size in cm
 #'
 #' @return
 #' @export
 #'
 #' @examples
-merge_upset_list <- function(upset_list, marg_size=5){
+merge_upset_list <- function(plt_list, marg_size=5){
+  if(!all(names(plt_list) %in% c("pmain","x_marg_plot","y_marg_plot"))){
+    stop('upset_list needs to be a named list with ggplot2 objects named: pmain, x_marg_plot, and y_marg_plot')
+  }
+  # Gets dims of grid matrix
+  grid_dims <- plt_list$pmain$data %>%
+    filter(., observed) %>%
+    summarise(n_distinct(intersect_id),
+              n_distinct(set_names)) %>%
+    setNames(., c('x', 'y'))
+
+  # converts to grob and hardcodes the size
+  pmain <- plt_list$pmain %>%
+    ggplotGrob(.) %>%
+    set_panel_size(.,
+                   width = .75*grid_dims$x,
+                   height = .75*grid_dims$y)
 
   plt_w_marg <-
-    cowplot::insert_xaxis_grob(upset_list$pmain,
-                               upset_list$x_marg_plot,
+    cowplot::insert_xaxis_grob(pmain,
+                               plt_list$x_marg_plot,
                                position = 'top',
                                height = grid::unit(marg_size,
                                                    'cm')) %>%
 
     cowplot::insert_yaxis_grob(.,
-                               upset_list$y_marg_plot,
+                               plt_list$y_marg_plot,
                                position = 'right',
                                width = grid::unit(marg_size,
                                                   'cm'))
@@ -263,10 +269,10 @@ merge_upset_list <- function(upset_list, marg_size=5){
 #'
 #' @return gtable object
 #' @export
-#'
+#' @importFrom grid unit
 #' @examples
 set_panel_size <- function(g, width=4, height=4){
-  width <- unit(width, "cm")
+  width <-  unit(width, "cm")
   height <- unit(height, "cm")
   panels <- grep("panel", g$layout$name)
   panel_index_w<- unique(g$layout$l[panels])

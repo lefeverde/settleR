@@ -1,0 +1,80 @@
+---
+title: "Introduction_to_settleR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction_to_settleR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction 
+# Background and Motivation 
+I had a need to convey combinations of sets and found the the usual method to do this, venn-diagrams or Euler plots too limiting. My research invovles identifying differentially expressed genes which involved looking large numbers of datasets which could be grouped any number of ways. I found [UpSet plots](https://github.com/hms-dbmi/UpSetR/) to offer a succint way to visualize these comparisons which is relatively intuitive to my audience. There is already an [UpSet package](https://cran.rstudio.com/web/packages/UpSetR/), however, I found it was not amenable to customization. In my experience, it is very difficult to write re-usable, modular code creating plots for anything besides one-off functions that will be used once, or at most a single context. 
+
+# settleR: A simple and customizable package for creating UpSet plots 
+I created the settleR package to to address the percieved challenges primarily for my own needs, but I hope that others may find it useful too. 
+The goal of settleR is to:
+
+1. Create a simple/modular framework for UpSet-like figures
+2. Make creating figures as painless as possible 
+3. Allow for arbitrary customization 
+
+
+```{r setup}
+library(settleR)
+library(grid)
+
+```
+# Creating a basic plot 
+```{r, out.width="50%"}
+# Loads an example setlist 
+gene_setlist <- 
+  system.file('extdata','ex_gene_setlist.rds', package = 'settleR') %>% 
+  readRDS(.)
+
+p <-  settleR_plot(gene_setlist)
+grid.draw(p)
+```
+
+
+## Adding color to the groups 
+```{r}
+col_map <- 
+  system.file('extdata','ex_col_map.rds', package = 'settleR') %>% 
+  readRDS(.)
+
+```
+## Adding boxes around specific groups 
+```{r}
+set_levels <- 
+  system.file('extdata','ex_set_levels.rds', package = 'settleR') %>% 
+  readRDS(.)
+
+intersect_lvls <- get_reordered_intersect_lvls(gene_setlist,
+                                               set_levels = set_levels,
+                                               nintersects = 15)
+
+bm <- sets_to_matrix(gene_setlist) %>% 
+  calc_set_overlaps(., set_levels = set_levels, 
+                    intersect_levels = intersect_lvls) 
+  
+ul <- make_upset_plots(bm, col_map = col_map)
+bound_boxes <- intersect_lvls[c(10:13)] %>% 
+  box_intercepts_dims(ul$pmain, .)
+pmain <- ul$pmain + 
+  geom_rect(data=bound_boxes,aes(xmin=xmin, xmax=xmax, ymin=ymin,ymax=ymax), 
+            inherit.aes = FALSE, 
+            color='red', 
+            fill=NA,
+            size=1.5
+  )
+
+```
+

@@ -64,3 +64,44 @@ test_that('calc_set_overlaps correctly creates the list of data.frames', {
 
 })
 
+test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
+  rds_to_load <-
+    c('ex_gene_setlist.rds',
+      'ex_col_map.rds',
+      'ex_set_levels.rds') %>%
+    lapply(., function(x){
+      system.file('extdata',
+                  x,
+                  package = 'settleR',
+                  mustWork = TRUE)
+    })
+
+  gene_setlist <- readRDS(rds_to_load[[1]])
+  col_map <- readRDS(rds_to_load[[2]])
+  set_levels <- readRDS(rds_to_load[[3]])
+
+
+  e_lvls <- c("intersect_13",
+              "intersect_2",
+              "intersect_11",
+              "intersect_14",
+              "intersect_9",
+              "intersect_10",
+              "intersect_3",
+              "intersect_1",
+              "intersect_4",
+              "intersect_5",
+              "intersect_6",
+              "intersect_7",
+              "intersect_8",
+              "intersect_12",
+              "intersect_15"
+  )
+  o_lvls <- get_reordered_intersect_lvls(gene_setlist, set_levels)
+  expect_equal(e_lvls, o_lvls)
+
+
+
+})
+
+

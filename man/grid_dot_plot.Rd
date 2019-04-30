@@ -4,7 +4,7 @@
 \alias{grid_dot_plot}
 \title{Plotting showing the grids}
 \usage{
-grid_dot_plot(grid_data, dot_size = 5, col_map = NULL)
+grid_dot_plot(grid_data, dot_size = 6.25, col_map = NULL)
 }
 \arguments{
 \item{grid_data}{data.frame with intersect_id, set_names, and observed as columns}

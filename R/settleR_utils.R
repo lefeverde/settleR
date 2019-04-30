@@ -61,7 +61,7 @@ sets_to_matrix <- function(setlist){
 #' @export
 #'
 #' @examples
-calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL, nintersects=100){
+calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL, nintersects=15){
 
   # if intersect_levels are specified, then
   # do not filter any of the non-zero intersects
@@ -79,13 +79,18 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
   intersect_data <- data.frame(intersect_set_size=cnt_df$freq,
                                intersect_degree=rowSums(cnt_df[,seq(1, ncol(cnt_df) -1 )])) %>%
     rownames_to_column(., 'intersect_id')
+
   if(is.null(intersect_levels)){
     intersect_levels <-
       dplyr::arrange(intersect_data, desc(intersect_set_size)) %>%
       pull(1)
   }
+  intersect_data <-
+    intersect_data[intersect_data$intersect_id %in% intersect_levels,]
+  intersect_data$intersect_id <-
+    factor(intersect_data$intersect_id,
+           levels=intersect_levels)
 
-  intersect_data$intersect_id <- factor(intersect_data$intersect_id, levels=intersect_levels)
   intersect_data <-
     dplyr::arrange(intersect_data, intersect_id) %>%
     cbind(x=seq(1, nrow(.)), .)
@@ -111,26 +116,20 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
   grid_data <- cnt_df[,seq(1, ncol(cnt_df) -1)] %>%
     as.matrix(.) %>%
     reshape2::melt() %>%
-    setNames(., c('intersect_id', 'set_names', 'observed'))
+    setNames(., c('intersect_id', 'set_names', 'observed')) %>%
+    dplyr::filter(., intersect_id %in% intersect_levels)
   # observed is basically a variable stating whether
   # the row combinations exists in the original data
   grid_data$observed <- as.logical(grid_data$observed)
   grid_data$set_names <- factor(grid_data$set_names,
                                 levels=set_levels)
+
   grid_data$intersect_id <- factor(grid_data$intersect_id,
                                    levels=intersect_levels)
 
   ol <- list(grid_data, intersect_data, set_totals) %>%
     setNames(., c('grid_data', 'intersect_data', 'set_totals'))
   return(ol)
-
-  # Merging DFs into longish df
-  # out_df <- merge(grid_data, intersect_data,
-  #                 all = T,
-  #                 by = 'intersect_id')
-  # out_df <-  merge(set_totals, out_df, by='set_names')
-  # return(out_df)
-
 
 }
 
@@ -181,5 +180,50 @@ get_reordered_intersect_lvls <- function(setlist,
     original_intersects[!original_intersects %in% singleton_intersects]
   intersect_lvls <- c(singleton_intersects, original_intersects)
   return(intersect_lvls)
+
+}
+
+
+
+#' Returns x and y coords of a bounding box
+#'
+#'
+#'
+#' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
+#' @param intersect_levels Vector of intercepts which specify intercepts to draw a box around
+#' @param box_pad padding surrounding the box
+#'
+#' @return
+#' @export
+#'
+#' @examples
+box_intercepts_dims <- function(grid_data_plot,
+                                intersect_levels,
+                                box_pad=.375){
+
+  #TODO make this accept integer idx instead of
+  # intersect str
+
+  if(all(class(grid_data_plot) !=  c('gg', 'ggplot'))){
+    stop('grid_data_plot needs to be a ggplot2 object')
+  }
+  plt_build <- ggplot_build(grid_data_plot)
+  orig_inter_order <- levels(plt_build$plot$data$intersect_id)
+
+  coord_pos <-  plt_build[['data']][[2]] %>%
+    group_by(., group) %>%
+    summarise(
+      xmin=min(x) - box_pad,
+      xmax=max(x) + box_pad,
+      ymin=min(y) - box_pad,
+      ymax=max(y) + box_pad
+    )
+  coord_pos <- cbind(orig_inter_order,
+                     coord_pos)
+  names(coord_pos)[1] <- 'intersect_id'
+  coord_pos <-
+    coord_pos[coord_pos$intersect_id %in% intersect_levels,]
+
+  return(coord_pos)
 
 }

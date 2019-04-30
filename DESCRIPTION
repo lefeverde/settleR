@@ -21,8 +21,11 @@ Imports:
     magrittr,
     gtable
 Suggests:
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 Depends:
     dplyr,
     ggplot2,
     tibble
+VignetteBuilder: knitr
