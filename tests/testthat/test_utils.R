@@ -1,7 +1,18 @@
 library(settleR)
 context('Testing functions from settleR_utils.R')
 
-
+get_example_data <- function(){
+  rds_to_load <-
+    c('ex_gene_setlist.rds',
+      'ex_col_map.rds',
+      'ex_set_levels.rds') %>%
+    lapply(., function(x){
+      system.file('extdata',
+                  x,
+                  package = 'settleR',
+                  mustWork = TRUE)
+    })
+}
 
 setlist <- list(
   S1=LETTERS[1:5],
@@ -15,6 +26,8 @@ setlist2 <- list(
   S3=LETTERS[1:10],
   S4=LETTERS[3:10]
 )
+
+
 test_that('sets_to_matrix gives errors on incorrect input', {
   expect_error(sets_to_matrix(data.frame()),
   "setlist needs to be a list of sets, not data.frame")
@@ -65,16 +78,7 @@ test_that('calc_set_overlaps correctly creates the list of data.frames', {
 })
 
 test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
-  rds_to_load <-
-    c('ex_gene_setlist.rds',
-      'ex_col_map.rds',
-      'ex_set_levels.rds') %>%
-    lapply(., function(x){
-      system.file('extdata',
-                  x,
-                  package = 'settleR',
-                  mustWork = TRUE)
-    })
+  rds_to_load <- get_example_data()
 
   gene_setlist <- readRDS(rds_to_load[[1]])
   col_map <- readRDS(rds_to_load[[2]])
@@ -105,3 +109,29 @@ test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
 })
 
 
+test_that('box_intercepts_dims returns bounding box over the specified intersect_levels',{
+  rds_to_load <- get_example_data()
+
+  gene_setlist <- readRDS(rds_to_load[[1]])
+  col_map <- readRDS(rds_to_load[[2]])
+  set_levels <- readRDS(rds_to_load[[3]])
+
+  intersect_levels <- get_reordered_intersect_lvls(gene_setlist, set_levels)
+  upset_list <- sets_to_matrix(gene_setlist) %>%
+    calc_set_overlaps(.,
+                      intersect_levels=intersect_levels,
+                      set_levels=set_levels)
+  ul <- make_upset_plots(upset_list, col_map)
+
+  box_dims <- box_intercepts_dims(ul$pmain, intersects_to_box =  'intersect_14')
+  e_box_dims <-
+    matrix(data = c('intersect_14', 4, 3.625, 4.375, 4.625, 5.375), nrow = 1, ncol = 6) %>%
+    data.frame(., stringsAsFactors = FALSE) %>%
+    setNames(., c("intersect_id","group","xmin","xmax","ymin","ymax"))
+
+  row.names(e_box_dims) <- 4
+  e_box_dims[,2:ncol(e_box_dims)] <-  lapply(e_box_dims[,2:ncol(e_box_dims)], as.numeric)
+  e_box_dims$group <- as.integer(e_box_dims$group)
+  expect_true(all_equal(box_dims, e_box_dims))
+
+})

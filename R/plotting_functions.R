@@ -108,10 +108,9 @@ intersect_bar_plot <- function(intersect_data){
                               vjust=1,
                               min.segment.length=.001) +
 
-    theme_void() +
-
-    theme(plot.margin = margin(0,0,0,0),
-          aspect.ratio = .5)
+    theme_void()
+  p <- p + theme(plot.margin = margin(0,0,0,0),
+               aspect.ratio = .5)
 
   axis_title <-  grobTree(textGrob("Size of overlap",
                                    x=0.25,
@@ -141,7 +140,8 @@ grid_dot_plot <- function(grid_data, dot_size=6.25, col_map=NULL){
   h_breaks <- seq(1,length(unique(grid_data$set_names)) - 1, by = 1)+ .5
   p <-  ggplot(data=grid_data, aes(x=intersect_id, y=set_names)) +
     geom_point(size=dot_size, alpha=.25) +
-    theme_void() # just plots empty dots
+    theme_empty()
+  # just plots empty dots
 
   p <- p +
     geom_line(data=grid_data[grid_data$observed,], # adds the lines

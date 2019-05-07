@@ -190,7 +190,7 @@ get_reordered_intersect_lvls <- function(setlist,
 #'
 #'
 #' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
-#' @param intersect_levels Vector of intercepts which specify intercepts to draw a box around
+#' @param intersects_to_box Vector of intercepts which specify intercepts to draw a box around
 #' @param box_pad padding surrounding the box
 #'
 #' @return
@@ -198,7 +198,7 @@ get_reordered_intersect_lvls <- function(setlist,
 #'
 #' @examples
 box_intercepts_dims <- function(grid_data_plot,
-                                intersect_levels,
+                                intersects_to_box,
                                 box_pad=.375){
 
   #TODO make this accept integer idx instead of
@@ -222,8 +222,8 @@ box_intercepts_dims <- function(grid_data_plot,
                      coord_pos)
   names(coord_pos)[1] <- 'intersect_id'
   coord_pos <-
-    coord_pos[coord_pos$intersect_id %in% intersect_levels,]
-
+    coord_pos[coord_pos$intersect_id %in% intersects_to_box,]
+  coord_pos$intersect_id <- as.character(coord_pos$intersect_id)
   return(coord_pos)
 
 }

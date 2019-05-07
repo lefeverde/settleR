@@ -4,12 +4,12 @@
 \alias{box_intercepts_dims}
 \title{Returns x and y coords of a bounding box}
 \usage{
-box_intercepts_dims(grid_data_plot, intersect_levels, box_pad = 0.375)
+box_intercepts_dims(grid_data_plot, intersects_to_box, box_pad = 0.375)
 }
 \arguments{
 \item{grid_data_plot}{ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots}
 
-\item{intersect_levels}{Vector of intercepts which specify intercepts to draw a box around}
+\item{intersects_to_box}{Vector of intercepts which specify intercepts to draw a box around}
 
 \item{box_pad}{padding surrounding the box}
 }
