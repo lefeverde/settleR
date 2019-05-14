@@ -4,27 +4,27 @@
 #' package but I've removed a lot of the unneeded code.
 #' I've also added a few helpful errors here.
 #'
-#' @param setlist list of sets
+#' @param setList list of sets
 #'
 #' @return binary matrix
 #' @export
 #'
 #' @examples
-sets_to_matrix <- function(setlist){
+sets_to_matrix <- function(setList){
   ## Errors
-  if(class(setlist) != 'list'){
-    e_message <- paste0('setlist needs to be a list of sets, not ',
-                        class(setlist))
+  if(class(setList) != 'list'){
+    e_message <- paste0('setList needs to be a list of sets, not ',
+                        class(setList))
     stop(e_message)
   }
 
-  if(! all(sapply(setlist, is.vector, simplify = TRUE))){
-    stop('all items in setlist need to be vectors')
+  if(! all(sapply(setList, is.vector, simplify = TRUE))){
+    stop('all items in setList need to be vectors')
   }
   ## Code, adapted from UpSetR
-  elements <- unlist(setlist) %>%
+  elements <- unlist(setList) %>%
     unique(.)
-  binary_mat <- lapply(setlist, function(x){
+  binary_mat <- lapply(setList, function(x){
     x <- as.vector(match(elements, x))
     x[is.na(x)] <- 0
     return(x)
@@ -53,19 +53,24 @@ sets_to_matrix <- function(setlist){
 #'
 #'
 #' @param binary_mat Binary matrix from \link[settleR]{sets_to_matrix}
-#' @param intersect_levels Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.
-#' @param set_levels Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.
+#' @param intersectLevels Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.
+#' @param setLevels Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.
 #' @param nintersects Integer number of intersects to show
 #'
 #' @return
 #' @export
 #'
 #' @examples
-calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL, nintersects=15){
+calc_set_overlaps <- function(binary_mat,
+                              intersectLevels=NULL,
+                              setLevels=NULL,
+                              nintersects=15){
+  # TODO rewrite this for S4 Class
 
-  # if intersect_levels are specified, then
+
+  # if intersectLevels are specified, then
   # do not filter any of the non-zero intersects
-  if(!is.null(intersect_levels)){
+  if(!is.null(intersectLevels)){
     nintersects <- Inf
   }
 
@@ -76,20 +81,20 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
   colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
 
   # Data for X-top margin plot
-  intersect_data <- data.frame(intersect_set_size=cnt_df$freq,
-                               intersect_degree=rowSums(cnt_df[,seq(1, ncol(cnt_df) -1 )])) %>%
+  intersect_data <-
+    data.frame(intersect_set_size=cnt_df$freq,
+               intersect_degree=rowSums(cnt_df[,seq(1, ncol(cnt_df) -1 )])) %>%
     rownames_to_column(., 'intersect_id')
 
-  if(is.null(intersect_levels)){
-    intersect_levels <-
+  if(is.null(intersectLevels)){
+    intersectLevels <-
       dplyr::arrange(intersect_data, desc(intersect_set_size)) %>%
       pull(1)
   }
   intersect_data <-
-    intersect_data[intersect_data$intersect_id %in% intersect_levels,]
+    intersect_data[intersect_data$intersect_id %in% intersectLevels,]
   intersect_data$intersect_id <-
-    factor(intersect_data$intersect_id,
-           levels=intersect_levels)
+    factor(intersect_data$intersect_id, levels=intersectLevels)
 
   intersect_data <-
     dplyr::arrange(intersect_data, intersect_id) %>%
@@ -100,13 +105,13 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
   set_totals <- data.frame(colSums(binary_mat)) %>%
     rownames_to_column(.) %>%
     setNames(., c('set_names', 'total_set_size'))
-  if(is.null(set_levels)){
-    set_levels <-
+  if(is.null(setLevels)){
+    setLevels <-
       dplyr::arrange(set_totals, total_set_size) %>%
       pull(1)
   }
-  set_totals$set_names <- factor(set_totals$set_names,
-                                 levels=set_levels)
+  set_totals$set_names <- factor(set_totals$set_names, levels=setLevels)
+
   set_totals <-
     dplyr::arrange(set_totals, set_names) %>%
     cbind(y=seq(1, nrow(.)), .)
@@ -117,15 +122,15 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
     as.matrix(.) %>%
     reshape2::melt() %>%
     setNames(., c('intersect_id', 'set_names', 'observed')) %>%
-    dplyr::filter(., intersect_id %in% intersect_levels)
+    dplyr::filter(., intersect_id %in% intersectLevels)
   # observed is basically a variable stating whether
   # the row combinations exists in the original data
   grid_data$observed <- as.logical(grid_data$observed)
-  grid_data$set_names <- factor(grid_data$set_names,
-                                levels=set_levels)
+  grid_data$set_names <-
+    factor(grid_data$set_names,levels=setLevels)
 
-  grid_data$intersect_id <- factor(grid_data$intersect_id,
-                                   levels=intersect_levels)
+  grid_data$intersect_id <-
+    factor(grid_data$intersect_id,levels=intersectLevels)
 
   ol <- list(grid_data, intersect_data, set_totals) %>%
     setNames(., c('grid_data', 'intersect_data', 'set_totals'))
@@ -147,20 +152,20 @@ calc_set_overlaps <- function(binary_mat, intersect_levels=NULL, set_levels=NULL
 #' @export
 #'
 #' @examples
-get_reordered_intersect_lvls <- function(setlist,
-                                         set_levels,
+get_reordered_intersect_lvls <- function(setList,
+                                         setLevels,
                                          nintersects=15){
-  original_intersects <- sets_to_matrix(setlist) %>%
+  original_intersects <- sets_to_matrix(setList) %>%
     calc_set_overlaps(.,
-                      set_levels = set_levels,
+                      setLevels = setLevels,
                       nintersects = nintersects) %>%
     .[['intersect_data']] %>%
     pull(2) %>%
     as.character(.)
 
-  all_inter_list <- sets_to_matrix(setlist) %>%
+  all_inter_list <- sets_to_matrix(setList) %>%
     calc_set_overlaps(.,
-                      set_levels = set_levels,
+                      setLevels = setLevels,
                       nintersects = Inf)
   all_gd <- all_inter_list[["grid_data"]] %>%
     filter(., observed)
@@ -170,7 +175,7 @@ get_reordered_intersect_lvls <- function(setlist,
     summarise(., deg=n()) %>%
     filter(., deg==1)
   singleton_intersects$set_names <-
-    all_gd$set_names[match(singleton_intersects$intersect_id,                                              all_gd$intersect_id)]
+    all_gd$set_names[match(singleton_intersects$intersect_id,all_gd$intersect_id)]
   singleton_intersects <- singleton_intersects %>%
     arrange(., set_names) %>%
     pull(1) %>%

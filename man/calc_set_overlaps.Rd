@@ -4,15 +4,15 @@
 \alias{calc_set_overlaps}
 \title{Creates df of upset data}
 \usage{
-calc_set_overlaps(binary_mat, intersect_levels = NULL,
-  set_levels = NULL, nintersects = 15)
+calc_set_overlaps(binary_mat, intersectLevels = NULL, setLevels = NULL,
+  nintersects = 15)
 }
 \arguments{
 \item{binary_mat}{Binary matrix from \link[settleR]{sets_to_matrix}}
 
-\item{intersect_levels}{Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.}
+\item{intersectLevels}{Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.}
 
-\item{set_levels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
+\item{setLevels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
 
 \item{nintersects}{Integer number of intersects to show}
 }

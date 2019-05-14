@@ -4,10 +4,10 @@
 \alias{sets_to_matrix}
 \title{Converts list of sets into a binary matrix}
 \usage{
-sets_to_matrix(setlist)
+sets_to_matrix(setList)
 }
 \arguments{
-\item{setlist}{list of sets}
+\item{setList}{list of sets}
 }
 \value{
 binary matrix

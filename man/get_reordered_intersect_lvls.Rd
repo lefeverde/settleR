@@ -4,12 +4,12 @@
 \alias{get_reordered_intersect_lvls}
 \title{Returns vector of intersect levels}
 \usage{
-get_reordered_intersect_lvls(setlist, set_levels, nintersects = 15)
+get_reordered_intersect_lvls(setList, setLevels, nintersects = 15)
 }
 \arguments{
-\item{setlist}{list of sets}
+\item{setList}{list of sets}
 
-\item{set_levels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
+\item{setLevels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
 
 \item{nintersects}{Integer number of intersects to show}
 }

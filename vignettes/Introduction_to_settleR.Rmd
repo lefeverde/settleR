@@ -53,17 +53,17 @@ col_map <-
 ```
 ## Adding boxes around specific groups 
 ```{r}
-set_levels <- 
+setLevels <- 
   system.file('extdata','ex_set_levels.rds', package = 'settleR') %>% 
   readRDS(.)
 
 intersect_lvls <- get_reordered_intersect_lvls(gene_setlist,
-                                               set_levels = set_levels,
+                                               setLevels = setLevels,
                                                nintersects = 15)
 
 bm <- sets_to_matrix(gene_setlist) %>% 
-  calc_set_overlaps(., set_levels = set_levels, 
-                    intersect_levels = intersect_lvls) 
+  calc_set_overlaps(., setLevels = setLevels, 
+                    intersectLevels = intersect_lvls) 
   
 ul <- make_upset_plots(bm, col_map = col_map)
 bound_boxes <- intersect_lvls[c(10:13)] %>% 

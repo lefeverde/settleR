@@ -3,7 +3,7 @@ context('Testing functions from settleR_utils.R')
 
 get_example_data <- function(){
   rds_to_load <-
-    c('ex_gene_setlist.rds',
+    c('ex_gene_setList.rds',
       'ex_col_map.rds',
       'ex_set_levels.rds') %>%
     lapply(., function(x){
@@ -14,13 +14,13 @@ get_example_data <- function(){
     })
 }
 
-setlist <- list(
+setList <- list(
   S1=LETTERS[1:5],
   S2=LETTERS[3:5],
   S3=LETTERS[1:10]
 )
 
-setlist2 <- list(
+setList2 <- list(
   S1=LETTERS[1:5],
   S2=LETTERS[3:5],
   S3=LETTERS[1:10],
@@ -30,9 +30,9 @@ setlist2 <- list(
 
 test_that('sets_to_matrix gives errors on incorrect input', {
   expect_error(sets_to_matrix(data.frame()),
-  "setlist needs to be a list of sets, not data.frame")
+  "setList needs to be a list of sets, not data.frame")
   expect_error(sets_to_matrix(list(data.frame())),
-               "all items in setlist need to be vectors")
+               "all items in setList need to be vectors")
 
 })
 test_that('calc_set_overlaps correctly creates the list of data.frames', {
@@ -68,7 +68,7 @@ test_that('calc_set_overlaps correctly creates the list of data.frames', {
                      set_lvls),
     total_set_size=c(3, 5, 10)
   )
-  res_list <- sets_to_matrix(setlist) %>%
+  res_list <- sets_to_matrix(setList) %>%
     calc_set_overlaps(.)
   expect_equal(res_list$grid_data, e_grid_data)
   expect_equal(res_list$intersect_data, e_intersect_data)
@@ -80,7 +80,7 @@ test_that('calc_set_overlaps correctly creates the list of data.frames', {
 test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
   rds_to_load <- get_example_data()
 
-  gene_setlist <- readRDS(rds_to_load[[1]])
+  gene_setList <- readRDS(rds_to_load[[1]])
   col_map <- readRDS(rds_to_load[[2]])
   set_levels <- readRDS(rds_to_load[[3]])
 
@@ -101,7 +101,7 @@ test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
               "intersect_12",
               "intersect_15"
   )
-  o_lvls <- get_reordered_intersect_lvls(gene_setlist, set_levels)
+  o_lvls <- get_reordered_intersect_lvls(gene_setList, set_levels)
   expect_equal(e_lvls, o_lvls)
 
 
@@ -112,15 +112,15 @@ test_that('get_reordered_intersect_lvls produces correctly ordered intersects',{
 test_that('box_intercepts_dims returns bounding box over the specified intersect_levels',{
   rds_to_load <- get_example_data()
 
-  gene_setlist <- readRDS(rds_to_load[[1]])
+  gene_setList <- readRDS(rds_to_load[[1]])
   col_map <- readRDS(rds_to_load[[2]])
   set_levels <- readRDS(rds_to_load[[3]])
 
-  intersect_levels <- get_reordered_intersect_lvls(gene_setlist, set_levels)
-  upset_list <- sets_to_matrix(gene_setlist) %>%
+  intersect_levels <- get_reordered_intersect_lvls(gene_setList, set_levels)
+  upset_list <- sets_to_matrix(gene_setList) %>%
     calc_set_overlaps(.,
-                      intersect_levels=intersect_levels,
-                      set_levels=set_levels)
+                      intersectLevels = intersect_levels,
+                      setLevels = set_levels)
   ul <- make_upset_plots(upset_list, col_map)
 
   box_dims <- box_intercepts_dims(ul$pmain, intersects_to_box =  'intersect_14')

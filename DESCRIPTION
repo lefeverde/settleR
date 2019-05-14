@@ -1,12 +1,14 @@
 Package: settleR
 Title: A package for creating customizable UpSet plots
-Version: 0.0.1.9000
+Version: 0.0.2.9000
 Authors@R:
     person(given = "Dan",
            family = "Lefever",
            role = c("aut", "cre"),
            email = "lefeverde@gmail.com")
-Description: What the package does (one paragraph).
+Description: A simple and customizable package for creating UpSet plots
+    I created the settleR package to to address the percieved challenges
+    primarily for my own needs, but I hope that others may find it useful too.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

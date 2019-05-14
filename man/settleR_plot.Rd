@@ -8,11 +8,7 @@ settleR_plot(setlist, nintersects = 15, set_levels = NULL,
   col_map = NULL, marg_size = 5)
 }
 \arguments{
-\item{setlist}{list of sets}
-
 \item{nintersects}{Integer number of intersects to show}
-
-\item{set_levels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
 
 \item{col_map}{optional named vector specifying text colours of y-axis labels}
 

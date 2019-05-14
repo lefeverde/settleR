@@ -12,13 +12,13 @@
 #' @examples
 settleR_plot <- function(setlist,
                          nintersects=15,
-                         set_levels=NULL,
+                         setLevels=NULL,
                          col_map=NULL,
                          marg_size=5){
   upset_list <- sets_to_matrix(setlist) %>%
     calc_set_overlaps(.,
                       nintersects=nintersects,
-                      set_levels=set_levels)
+                      setLevels=setLevels)
   upset_plt <- make_upset_plots(upset_list, col_map) %>%
     merge_upset_list(.,)
   return(upset_plt)
