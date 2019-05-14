@@ -1,3 +1,5 @@
+
+
 #' Converts list of sets into a binary matrix
 #'
 #' This creates a matrix simliar to that in the UpSetR
@@ -38,6 +40,28 @@ sets_to_matrix <- function(setList){
 
 
 }
+
+#' Creates a data.frame with the counts per set
+#'
+#' Takes a binary matrix, for example the output from \link[settleR]{sets_to_matrix}
+#' or similiar and returns a data.frame with the counts (or frequency) of the
+#' set for each of the groups.
+#'
+#' @param binary_mat binary matrix (see \link[settleR]{sets_to_matrix})
+#'
+#' @return a data.frame
+#' @export
+#'
+#' @examples
+create_count_df <- function(binary_mat){
+  cnt_df <- plyr::count(binary_mat) %>%
+    arrange(., desc(freq))
+  cnt_df <- cnt_df[seq_len(min(nintersects, nrow(cnt_df))),]
+  row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
+  colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
+  return(cnt_df)
+}
+
 
 #' Creates df of upset data
 #'
@@ -132,8 +156,12 @@ calc_set_overlaps <- function(binary_mat,
   grid_data$intersect_id <-
     factor(grid_data$intersect_id,levels=intersectLevels)
 
-  ol <- list(grid_data, intersect_data, set_totals) %>%
-    setNames(., c('grid_data', 'intersect_data', 'set_totals'))
+  ol <- list(grid_data,
+             intersect_data,
+             set_totals) %>%
+    setNames(., c('grid_data',
+                  'intersect_data',
+                  'set_totals'))
   return(ol)
 
 }

@@ -200,8 +200,6 @@ make_upset_plots <- function(upset_list, col_map=NULL){
   pmain <- grid_dot_plot(upset_list$grid_data,
                          col_map = col_map)
 
-
-
   x_marg_plot <- intersect_bar_plot(upset_list$intersect_data)
   y_marg_plot <- set_totals_bar_plot(upset_list$set_totals)
 

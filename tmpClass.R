@@ -3,7 +3,8 @@
 SettleR <- function(setList,
                     setLevels=NULL,
                     colMap=NULL,
-                    intersectLevels=NULL){
+                    intersectLevels=NULL,
+                    nintersects=NULL){
   binaryMat <- sets_to_matrix(setList)
 
   plotData <- binaryMat %>%
@@ -17,18 +18,23 @@ SettleR <- function(setList,
   ## gets levels without regardless of whether they
   ## passed as arg or NULL and calculated on the fly
   intersectLevels <- levels(plotData$grid_data$intersect_id)
-  setLevels <-  levels(pd$set_totals$set_names)
-
+  setLevels <-  levels(plotData$set_totals$set_names)
+  if(is.null(colMap)){
+    colMap <- data.frame()
+  }
 
   settleRObj <- new('SettleR',
                     setList=setList,
                     binaryMat=binaryMat,
-                    plotData=plotData,
-                    plotList=NULL,
+                    # plotData=plotData,
+                    grid_data=grid_data,
+                    intersect_data=intersect_data,
+                    set_totals=set_totals,
+                    # plotList=NULL,
                     setLevels=setLevels,
                     colMap=colMap,
                     intersectLevels=intersectLevels,
-                    nintersects='numeric')
+                    nintersects=nintersects)
 
 }
 
@@ -37,10 +43,14 @@ setClass('SettleR',
          slots=list(
            setList='list',
            binaryMat='matrix',
-           plotData='list',
-           plotList='list',
+           cnt_df='data.frame',
+           grid_data='data.frame',
+           intersect_data='data.frame',
+           set_totals='data.frame',
+           # plotData='list',
+           # plotList='list',
            setLevels='character',
-           colMap='character',
+           colMap='data.frame',
            intersectLevels='character',
            nintersects='numeric'
          )
