@@ -4,12 +4,12 @@
 \alias{make_upset_plots}
 \title{Creates list of upset plots}
 \usage{
-make_upset_plots(upset_list, col_map = NULL)
+make_upset_plots(upset_list, colMap = NULL)
 }
 \arguments{
 \item{upset_list}{list of data.frames from \link[settleR]{calc_set_overlaps}}
 
-\item{col_map}{optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}}
+\item{colMap}{optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}}
 }
 \description{
 This is a wrapper which just wraps the creation

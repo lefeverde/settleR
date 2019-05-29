@@ -4,15 +4,19 @@
 \alias{settleR_plot}
 \title{Creates a settleR plot starting from a named list of sets}
 \usage{
-settleR_plot(setlist, nintersects = 15, set_levels = NULL,
-  col_map = NULL, marg_size = 5)
+settleR_plot(setList, nIntersects = 15, setLevels = NULL,
+  colMap = NULL, margSize = 5)
 }
 \arguments{
-\item{nintersects}{Integer number of intersects to show}
+\item{setList}{list of sets}
 
-\item{col_map}{optional named vector specifying text colours of y-axis labels}
+\item{nIntersects}{Integer number of intersects to show}
 
-\item{marg_size}{sets height or width of plots in margin size in cm}
+\item{setLevels}{Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.}
+
+\item{colMap}{optional named vector specifying text colours of y-axis labels}
+
+\item{margSize}{sets height or width of plots in margin size in cm}
 }
 \description{
 Creates a settleR plot starting from a named list of sets

@@ -59,7 +59,7 @@ setLevels <-
 
 intersect_lvls <- get_reordered_intersect_lvls(gene_setlist,
                                                setLevels = setLevels,
-                                               nintersects = 15)
+                                               nIntersects = 15)
 
 bm <- sets_to_matrix(gene_setlist) %>% 
   calc_set_overlaps(., setLevels = setLevels, 

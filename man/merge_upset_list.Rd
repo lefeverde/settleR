@@ -4,12 +4,12 @@
 \alias{merge_upset_list}
 \title{Merges list of ggplot upset into gtable object}
 \usage{
-merge_upset_list(plt_list, marg_size = 5)
+merge_upset_list(plt_list, margSize = 5)
 }
 \arguments{
 \item{plt_list}{list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured}
 
-\item{marg_size}{sets height or width of plots in margin size in cm}
+\item{margSize}{sets height or width of plots in margin size in cm}
 }
 \description{
 Merges list of ggplot upset into gtable object
