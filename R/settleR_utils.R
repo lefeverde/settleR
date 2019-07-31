@@ -1,4 +1,4 @@
-
+#### Helper functions for SettleR class ####
 
 #' Converts list of sets into a binary matrix
 #'
@@ -54,15 +54,118 @@ sets_to_matrix <- function(setList){
 #'
 #' @examples
 create_count_df <- function(binary_mat){
+  cnms <- colnames(binary_mat)
   cnt_df <- plyr::count(binary_mat) %>%
     arrange(., desc(freq))
   cnt_df <- cnt_df[seq_len(nrow(cnt_df)),]
   row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
-  colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
+  colnames(cnt_df)[1:(ncol(cnt_df) - 1)] <- cnms
+
   return(cnt_df)
 }
 
 
+
+
+#' Returns vector of intersect levels
+#'
+#'
+#' Intersect levels are reordered such that the
+#' exclusive  singleton sets are the first n
+#' number of intersects and the remaining are
+#' ordered from largest to smallest like normal.
+#'
+#' @inheritParams sets_to_matrix
+#' @inheritParams calc_set_overlaps
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_reordered_intersect_lvls <- function(setList,
+                                         setLevels,
+                                         nIntersects=15){
+  # TODO delete this function and rely on the constructor only
+  original_intersects <- sets_to_matrix(setList) %>%
+    calc_set_overlaps(.,
+                      setLevels = setLevels,
+                      nIntersects = nIntersects) %>%
+    .[['intersect_data']] %>%
+    pull(2) %>%
+    as.character(.)
+
+  all_inter_list <- sets_to_matrix(setList) %>%
+    calc_set_overlaps(.,
+                      setLevels = setLevels,
+                      nIntersects = Inf)
+  all_gd <- all_inter_list[["grid_data"]] %>%
+    filter(., observed)
+
+  singleton_intersects <- all_gd %>%
+    group_by(., intersect_id) %>%
+    summarise(., deg=n()) %>%
+    filter(., deg==1)
+  singleton_intersects$set_names <-
+    all_gd$set_names[match(singleton_intersects$intersect_id,all_gd$intersect_id)]
+  singleton_intersects <- singleton_intersects %>%
+    arrange(., set_names) %>%
+    pull(1) %>%
+    as.character(.)
+
+  original_intersects <-
+    original_intersects[!original_intersects %in% singleton_intersects]
+  intersect_lvls <- c(singleton_intersects, original_intersects)
+  return(intersect_lvls)
+
+}
+
+
+
+#' Returns x and y coords of a bounding box
+#'
+#'
+#'
+#' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
+#' @param intersects_to_box Vector of intercepts which specify intercepts to draw a box around
+#' @param box_pad padding surrounding the box
+#'
+#' @return
+#' @export
+#'
+#' @examples
+box_intercepts_dims <- function(grid_data_plot,
+                                intersects_to_box,
+                                box_pad=.375){
+
+  #TODO make this accept integer idx instead of
+  # intersect str
+
+  if(all(class(grid_data_plot) !=  c('gg', 'ggplot'))){
+    stop('grid_data_plot needs to be a ggplot2 object')
+  }
+  plt_build <- ggplot_build(grid_data_plot)
+  orig_inter_order <- levels(plt_build$plot$data$intersect_id)
+
+  coord_pos <-  plt_build[['data']][[2]] %>%
+    group_by(., group) %>%
+    summarise(
+      xmin=min(x) - box_pad,
+      xmax=max(x) + box_pad,
+      ymin=min(y) - box_pad,
+      ymax=max(y) + box_pad
+    )
+  coord_pos <- cbind(orig_inter_order,
+                     coord_pos)
+  names(coord_pos)[1] <- 'intersect_id'
+  coord_pos <-
+    coord_pos[coord_pos$intersect_id %in% intersects_to_box,]
+  coord_pos$intersect_id <- as.character(coord_pos$intersect_id)
+  return(coord_pos)
+
+}
+
+
+#### Depreciated functions ####
 #' Creates df of upset data
 #'
 #' This formats the resulting data to long(ish)
@@ -163,102 +266,5 @@ calc_set_overlaps <- function(binary_mat,
                   'intersect_data',
                   'set_totals'))
   return(ol)
-
-}
-
-#' Returns vector of intersect levels
-#'
-#'
-#' Intersect levels are reordered such that the
-#' exclusive  singleton sets are the first n
-#' number of intersects and the remaining are
-#' ordered from largest to smallest like normal.
-#'
-#' @inheritParams sets_to_matrix
-#' @inheritParams calc_set_overlaps
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_reordered_intersect_lvls <- function(setList,
-                                         setLevels,
-                                         nIntersects=15){
-  # TODO delete this function and rely on the constructor only
-  original_intersects <- sets_to_matrix(setList) %>%
-    calc_set_overlaps(.,
-                      setLevels = setLevels,
-                      nIntersects = nIntersects) %>%
-    .[['intersect_data']] %>%
-    pull(2) %>%
-    as.character(.)
-
-  all_inter_list <- sets_to_matrix(setList) %>%
-    calc_set_overlaps(.,
-                      setLevels = setLevels,
-                      nIntersects = Inf)
-  all_gd <- all_inter_list[["grid_data"]] %>%
-    filter(., observed)
-
-  singleton_intersects <- all_gd %>%
-    group_by(., intersect_id) %>%
-    summarise(., deg=n()) %>%
-    filter(., deg==1)
-  singleton_intersects$set_names <-
-    all_gd$set_names[match(singleton_intersects$intersect_id,all_gd$intersect_id)]
-  singleton_intersects <- singleton_intersects %>%
-    arrange(., set_names) %>%
-    pull(1) %>%
-    as.character(.)
-
-  original_intersects <-
-    original_intersects[!original_intersects %in% singleton_intersects]
-  intersect_lvls <- c(singleton_intersects, original_intersects)
-  return(intersect_lvls)
-
-}
-
-
-
-#' Returns x and y coords of a bounding box
-#'
-#'
-#'
-#' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
-#' @param intersects_to_box Vector of intercepts which specify intercepts to draw a box around
-#' @param box_pad padding surrounding the box
-#'
-#' @return
-#' @export
-#'
-#' @examples
-box_intercepts_dims <- function(grid_data_plot,
-                                intersects_to_box,
-                                box_pad=.375){
-
-  #TODO make this accept integer idx instead of
-  # intersect str
-
-  if(all(class(grid_data_plot) !=  c('gg', 'ggplot'))){
-    stop('grid_data_plot needs to be a ggplot2 object')
-  }
-  plt_build <- ggplot_build(grid_data_plot)
-  orig_inter_order <- levels(plt_build$plot$data$intersect_id)
-
-  coord_pos <-  plt_build[['data']][[2]] %>%
-    group_by(., group) %>%
-    summarise(
-      xmin=min(x) - box_pad,
-      xmax=max(x) + box_pad,
-      ymin=min(y) - box_pad,
-      ymax=max(y) + box_pad
-    )
-  coord_pos <- cbind(orig_inter_order,
-                     coord_pos)
-  names(coord_pos)[1] <- 'intersect_id'
-  coord_pos <-
-    coord_pos[coord_pos$intersect_id %in% intersects_to_box,]
-  coord_pos$intersect_id <- as.character(coord_pos$intersect_id)
-  return(coord_pos)
 
 }

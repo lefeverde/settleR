@@ -208,7 +208,7 @@ make_upset_plots <- function(upset_list, colMap=NULL){
   y_marg_plot <- set_totals_bar_plot(upset_list$set_totals)
 
   plt_list <- list(pmain,x_marg_plot,y_marg_plot) %>%
-    setNames(., c('pmain','x_marg_plot','y_marg_plot') )
+    setNames(., c("gridPlot","intersectPlotX","setPlotY"))
 
   return(plt_list)
 }
@@ -224,18 +224,18 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 #'
 #' @examples
 merge_upset_list <- function(plt_list, margSize=5){
-  if(!all(names(plt_list) %in% c("pmain","x_marg_plot","y_marg_plot"))){
-    stop('upset_list needs to be a named list with ggplot2 objects named: pmain, x_marg_plot, and y_marg_plot')
+  if(!all(names(plt_list) %in% c("gridPlot","intersectPlotX","setPlotY"))){
+    stop('upset_list needs to be a named list with ggplot2 objects named: gridPlot, intersectPlotX, and setPlotY')
   }
   # Gets dims of grid matrix
-  grid_dims <- plt_list$pmain$data %>%
+  grid_dims <- plt_list$gridPlot$data %>%
     filter(., observed) %>%
     summarise(n_distinct(intersect_id),
               n_distinct(set_names)) %>%
     setNames(., c('x', 'y'))
 
   # converts to grob and hardcodes the size
-  pmain <- plt_list$pmain %>%
+  pmain <- plt_list$gridPlot %>%
     ggplotGrob(.) %>%
     set_panel_size(.,
                    width = .75*grid_dims$x,
@@ -243,13 +243,13 @@ merge_upset_list <- function(plt_list, margSize=5){
 
   plt_w_marg <-
     cowplot::insert_xaxis_grob(pmain,
-                               plt_list$x_marg_plot,
+                               plt_list$intersectPlotX,
                                position = 'top',
                                height = grid::unit(margSize,
                                                    'cm')) %>%
 
     cowplot::insert_yaxis_grob(.,
-                               plt_list$y_marg_plot,
+                               plt_list$setPlotY,
                                position = 'right',
                                width = grid::unit(margSize,
                                                   'cm'))

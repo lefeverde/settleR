@@ -68,20 +68,6 @@ SettleR <- function(setList,
     colMap <- rep('black', nrow(setTotals)) %>%
       setNames(., setTotals$set_names)
   }
-  # settleRData <- list(
-  #   setList,
-  #   binaryMat,
-  #   countDf,
-  #   gridData,
-  #   intersectData,
-  #   setTotals
-  # ) %>%
-  #   setNames(., c("setList",
-  #                 "binaryMat",
-  #                 "countDf",
-  #                 "gridData",
-  #                 "intersectData",
-  #                 "setTotals"))
 
 
   settleRObj <- new('SettleR',
@@ -91,14 +77,13 @@ SettleR <- function(setList,
                     gridData=gridData,
                     intersectData=intersectData,
                     setTotals=setTotals,
-                    # plotList=list(),
                     setLevels=setLevels,
                     colMap=colMap,
                     intersectLevels=intersectLevels)
   # Kind of a kludge.
   # Basically, I create the class with empty plotList
   # and then
-  # settleRObj <- make_settleR_plots(settleRObj)
+  settleRObj <- make_settleR_plots(settleRObj)
   return(settleRObj)
 
 }
