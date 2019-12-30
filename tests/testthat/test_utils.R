@@ -123,7 +123,7 @@ test_that('box_intercepts_dims returns bounding box over the specified intersect
                       setLevels = set_levels)
   ul <- make_upset_plots(upset_list, col_map)
 
-  box_dims <- box_intercepts_dims(ul$pmain, intersects_to_box =  'intersect_14')
+  box_dims <- box_intercepts_dims(ul$gridPlot, intersects_to_box =  'intersect_14')
   e_box_dims <-
     matrix(data = c('intersect_14', 4, 3.625, 4.375, 4.625, 5.375), nrow = 1, ncol = 6) %>%
     data.frame(., stringsAsFactors = FALSE) %>%

@@ -3,16 +3,18 @@
 \docType{class}
 \name{SettleR-class}
 \alias{SettleR-class}
-\title{Title}
+\title{SettleR class}
 \description{
-Title
+This is the class which stores all the data for creating a
+settleR plot. It should be created through using the
+\link[settleR]{SettleR} function.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{setList}}{list.}
+\item{\code{setList}}{list of sets}
 
-\item{\code{binaryMat}}{matrix.}
+\item{\code{binaryMat}}{binary matrix}
 
 \item{\code{countDf}}{data.frame.}
 

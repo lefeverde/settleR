@@ -135,9 +135,10 @@ intersect_bar_plot <- function(intersect_data){
 #'
 #' @examples
 grid_dot_plot <- function(grid_data, dot_size=6.25, colMap=NULL){
-
-  v_breaks <- seq(1,length(unique(grid_data$intersect_id)) -1, by = 1)+ .5
-  h_breaks <- seq(1,length(unique(grid_data$set_names)) - 1, by = 1)+ .5
+  v_max <- max(1, length(unique(grid_data$intersect_id)) -1)
+  v_breaks <- seq(1, v_max, by = 1)+ .5
+  h_max <- max(1, length(unique(grid_data$set_names)) - 1)
+  h_breaks <- seq(1, h_max, by = 1)+ .5
   p <-  ggplot(data=grid_data, aes(x=intersect_id, y=set_names)) +
     geom_point(size=dot_size, alpha=.25) +
     theme_empty()

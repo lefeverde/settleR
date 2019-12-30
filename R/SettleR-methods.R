@@ -1,6 +1,6 @@
 #' Creates the 3 plots for a settleR plot
 #'
-#' @param settleRObject
+#' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
 #'
 #' @import dplyr
 #'

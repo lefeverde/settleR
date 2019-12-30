@@ -89,7 +89,14 @@ SettleR <- function(setList,
 }
 
 
-
+#### SettleR roxygen block ####
+#' @title Setters and Getters
+#'
+#' @description Place to put all documentation for Setters and Getters
+#' @name accessors
+#' @inheritParams SettleR-class
+#'
+NULL
 
 # TODO create nest of raw data, and settleRdata
 # So it's consistant with plotList
@@ -102,8 +109,8 @@ SettleR <- function(setList,
 #' \link[settleR]{SettleR} function.
 #'
 #'
-#' @slot setList list.
-#' @slot binaryMat matrix.
+#' @slot setList list of sets
+#' @slot binaryMat binary matrix
 #' @slot countDf data.frame.
 #' @slot gridData data.frame.
 #' @slot intersectData data.frame.
@@ -146,6 +153,7 @@ setMethod(f = 'show',
       })
 
 ### gridData ####
+#' @rdname accessors
 #' @export
 setGeneric('gridData', function(object){standardGeneric('gridData')})
 setMethod(
@@ -154,7 +162,9 @@ setMethod(
   definition = function(object){
     return(object@gridData)
   })
+
 #' @export
+#' @rdname accessors
 setGeneric('gridData<-', function(object,value){standardGeneric('gridData<-')})
 setReplaceMethod(
   f = 'gridData',
@@ -165,6 +175,7 @@ setReplaceMethod(
   })
 ### intersectData ####
 #' @export
+#' @rdname accessors
 setGeneric('intersectData', function(object){standardGeneric('intersectData')})
 setMethod(
   f = 'intersectData',
@@ -173,6 +184,7 @@ setMethod(
     return(object@intersectData)
   })
 #' @export
+#' @rdname accessors
 setGeneric('intersectData<-', function(object,value){standardGeneric('intersectData<-')})
 setReplaceMethod(
   f = 'intersectData',
@@ -183,6 +195,7 @@ setReplaceMethod(
   })
 ### setTotals ####
 #' @export
+#' @rdname accessors
 setGeneric('setTotals', function(object){standardGeneric('setTotals')})
 setMethod(
   f = 'setTotals',
@@ -191,6 +204,7 @@ setMethod(
     return(object@setTotals)
   })
 #' @export
+#' @rdname accessors
 setGeneric('setTotals<-', function(object,value){standardGeneric('setTotals<-')})
 setReplaceMethod(
   f = 'setTotals',
@@ -201,6 +215,7 @@ setReplaceMethod(
   })
 ### plotList ####
 #' @export
+#' @rdname accessors
 setGeneric('plotList', function(object){standardGeneric('plotList')})
 setMethod(
   f = 'plotList',
@@ -209,6 +224,7 @@ setMethod(
     return(object@plotList)
   })
 #' @export
+#' @rdname accessors
 setGeneric('plotList<-', function(object,value){standardGeneric('plotList<-')})
 setReplaceMethod(
   f = 'plotList',
@@ -219,6 +235,7 @@ setReplaceMethod(
   })
 ### setLevels ####
 #' @export
+#' @rdname accessors
 setGeneric('setLevels', function(object){standardGeneric('setLevels')})
 setMethod(
   f = 'setLevels',
@@ -227,6 +244,7 @@ setMethod(
     return(object@setLevels)
   })
 #' @export
+#' @rdname accessors
 setGeneric('setLevels<-', function(object,value){standardGeneric('setLevels<-')})
 setReplaceMethod(
   f = 'setLevels',
@@ -237,6 +255,7 @@ setReplaceMethod(
   })
 ### intersectLevels ####
 #' @export
+#' @rdname accessors
 setGeneric('intersectLevels', function(object){standardGeneric('intersectLevels')})
 setMethod(
   f = 'intersectLevels',
@@ -245,6 +264,7 @@ setMethod(
     return(object@intersectLevels)
   })
 #' @export
+#' @rdname accessors
 setGeneric('intersectLevels<-', function(object,value){standardGeneric('intersectLevels<-')})
 setReplaceMethod(
   f = 'intersectLevels',
@@ -255,6 +275,7 @@ setReplaceMethod(
   })
 ### colMap ####
 #' @export
+#' @rdname accessors
 setGeneric('colMap', function(object){standardGeneric('colMap')})
 setMethod(
   f = 'colMap',
@@ -263,6 +284,7 @@ setMethod(
     return(object@colMap)
   })
 #' @export
+#' @rdname accessors
 setGeneric('colMap<-', function(object,value){standardGeneric('colMap<-')})
 setReplaceMethod(
   f = 'colMap',
