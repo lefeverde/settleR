@@ -1,3 +1,8 @@
+
+
+
+
+
 #' Creates the 3 plots for a settleR plot
 #'
 #' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
@@ -56,3 +61,93 @@ make_settleR_plots <- function(settleRObject){
   return(settleRObject)
 }
 
+
+
+#' wrapper to save the upset plot created by settleR_plot
+#'
+#' Essentially, this is just a wrapper around ggsave. The difference is that
+#' plot size is automatically calculated.
+#' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
+#' @param fn file name
+#'
+#' @importFrom magrittr multiply_by
+#' @importFrom gtable gtable_height gtable_width
+#' @importFrom grid convertHeight
+#' @return
+#' @export
+#'
+#' @examples
+settleR_save <- function(settleRObject, fn){
+
+  plts <- plotList(settleRObject)
+  upset_plt <- plts$settleRPlot
+
+  hght <- gtable_height(upset_plt) %>%
+    convertHeight(., 'cm', valueOnly = TRUE) %>%
+    multiply_by(1.125) %>%
+    round(., 1)
+  wdth <- gtable_width(upset_plt) %>%
+    convertHeight(., 'cm', valueOnly = TRUE) %>%
+    multiply_by(1.125) %>%
+    round(., 1)
+  ggsave(fn, upset_plt, width = wdth, height = hght, units = 'cm')
+
+}
+
+#' Plots the settleR plot on the device
+#'
+#' @param settleRObject
+#'
+#' @importFrom cowplot ggdraw
+#'
+#' @return
+#' @export
+#'
+#' @examples
+settleR_plot <- function(settleRObject){
+  plts <- plotList(settleRObject)
+  upset_plt <- plts$settleRPlot
+  ggdraw(upset_plt)
+
+}
+
+#' Returns vector of intersect levels
+#'
+#'
+#' Intersect levels are reordered such that the
+#' exclusive  singleton sets are the first n
+#' number of intersects and the remaining are
+#' ordered from largest to smallest like normal.
+#'
+#' @inheritParams sets_to_matrix
+#'
+#'
+#' @return
+#' @export
+#'
+#' @examples
+reorder_by_singletons <- function(settleRObject){
+  # TODO make this return an updated settleRObject
+
+  original_intersects <- intersectLevels(settleRObject)
+
+  all_gd <- gridData(settler_object) %>%
+    filter(., observed)
+
+  singleton_intersects <- all_gd %>%
+    group_by(., intersect_id) %>%
+    summarise(., deg=n()) %>%
+    filter(., deg==1)
+  singleton_intersects$set_names <-
+    all_gd$set_names[match(singleton_intersects$intersect_id,all_gd$intersect_id)]
+  singleton_intersects <- singleton_intersects %>%
+    arrange(., set_names) %>%
+    pull(1) %>%
+    as.character(.)
+
+  original_intersects <-
+    original_intersects[!original_intersects %in% singleton_intersects]
+  intersect_lvls <- c(singleton_intersects, original_intersects)
+  return(intersect_lvls)
+
+}

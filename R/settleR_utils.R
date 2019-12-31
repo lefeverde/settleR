@@ -1,4 +1,8 @@
-#### Helper functions for SettleR class ####
+#### File for set opertation functions ####
+# This file contains the miscelanous fucntions used for
+# SettleR as well others with less intergration.
+# TODO revisit the organization
+
 
 #' Converts list of sets into a binary matrix
 #'
@@ -34,7 +38,7 @@ sets_to_matrix <- function(setList){
   binary_mat <-  ifelse(binary_mat >0,
                         as.integer(1),
                         as.integer(0)
-                      )
+  )
   row.names(binary_mat) <- elements
   return(binary_mat)
 
@@ -67,204 +71,30 @@ create_count_df <- function(binary_mat){
 
 
 
-#' Returns vector of intersect levels
-#'
-#'
-#' Intersect levels are reordered such that the
-#' exclusive  singleton sets are the first n
-#' number of intersects and the remaining are
-#' ordered from largest to smallest like normal.
-#'
-#' @inheritParams sets_to_matrix
-#' @inheritParams calc_set_overlaps
+#### Functions for testing #####
+
+#' loads data for testing
 #'
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @examples
-get_reordered_intersect_lvls <- function(setList,
-                                         setLevels,
-                                         nIntersects=15){
-  # TODO delete this function and rely on the constructor only
-  original_intersects <- sets_to_matrix(setList) %>%
-    calc_set_overlaps(.,
-                      setLevels = setLevels,
-                      nIntersects = nIntersects) %>%
-    .[['intersect_data']] %>%
-    pull(2) %>%
-    as.character(.)
-
-  all_inter_list <- sets_to_matrix(setList) %>%
-    calc_set_overlaps(.,
-                      setLevels = setLevels,
-                      nIntersects = Inf)
-  all_gd <- all_inter_list[["grid_data"]] %>%
-    filter(., observed)
-
-  singleton_intersects <- all_gd %>%
-    group_by(., intersect_id) %>%
-    summarise(., deg=n()) %>%
-    filter(., deg==1)
-  singleton_intersects$set_names <-
-    all_gd$set_names[match(singleton_intersects$intersect_id,all_gd$intersect_id)]
-  singleton_intersects <- singleton_intersects %>%
-    arrange(., set_names) %>%
-    pull(1) %>%
-    as.character(.)
-
-  original_intersects <-
-    original_intersects[!original_intersects %in% singleton_intersects]
-  intersect_lvls <- c(singleton_intersects, original_intersects)
-  return(intersect_lvls)
-
+get_example_data <- function(){
+  rds_to_load <-
+    c('ex_col_map.rds',
+      'ex_gene_setlist.rds',
+      'ex_set_levels.rds',
+      'expected_gridData.rds',
+      'expected_intersectData.rds',
+      'expected_setTotals.rds') %>%
+    lapply(., function(x){
+      system.file('extdata',
+                  x,
+                  package = 'settleR',
+                  mustWork = TRUE)
+    })
 }
 
 
 
-#' Returns x and y coords of a bounding box
-#'
-#'
-#'
-#' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
-#' @param intersects_to_box Vector of intercepts which specify intercepts to draw a box around
-#' @param box_pad padding surrounding the box
-#'
-#' @return
-#' @export
-#'
-#' @examples
-box_intercepts_dims <- function(grid_data_plot,
-                                intersects_to_box,
-                                box_pad=.375){
 
-  #TODO make this accept integer idx instead of
-  # intersect str
-
-  if(all(class(grid_data_plot) !=  c('gg', 'ggplot'))){
-    stop('grid_data_plot needs to be a ggplot2 object')
-  }
-  plt_build <- ggplot_build(grid_data_plot)
-  orig_inter_order <- levels(plt_build$plot$data$intersect_id)
-
-  coord_pos <-  plt_build[['data']][[2]] %>%
-    group_by(., group) %>%
-    summarise(
-      xmin=min(x) - box_pad,
-      xmax=max(x) + box_pad,
-      ymin=min(y) - box_pad,
-      ymax=max(y) + box_pad
-    )
-  coord_pos <- cbind(orig_inter_order,
-                     coord_pos)
-  names(coord_pos)[1] <- 'intersect_id'
-  coord_pos <-
-    coord_pos[coord_pos$intersect_id %in% intersects_to_box,]
-  coord_pos$intersect_id <- as.character(coord_pos$intersect_id)
-  return(coord_pos)
-
-}
-
-
-#### Depreciated functions ####
-#' Creates df of upset data
-#'
-#' This formats the resulting data to long(ish)
-#' formatted data. The reason why I've tried
-#' put everything in 1 data.frame is so that
-#' I can set the factors once in a single object.
-#' It's currently adding more work to the uspset
-#' wrapper since I have to essentially split this
-#' into seperate objects, but I think it's worth
-#' it so that I don't have to always think about the factors.
-#'
-#'
-#'
-#' @param binary_mat Binary matrix from \link[settleR]{sets_to_matrix}
-#' @param intersectLevels Optional vector of intersects which specifies ordering of intersects. If null, intersects are sorted by size.
-#' @param setLevels Optional vector of the set names (y-axis on \link[settleR]{grid_dot_plot}). If null, sets are ordered by size.
-#' @param nIntersects Integer number of intersects to show
-#'
-#' @return
-#' @export
-#'
-#' @examples
-calc_set_overlaps <- function(binary_mat,
-                              intersectLevels=NULL,
-                              setLevels=NULL,
-                              nIntersects=15){
-  # TODO rewrite this for S4 Class
-
-
-  # if intersectLevels are specified, then
-  # do not filter any of the non-zero intersects
-  if(!is.null(intersectLevels)){
-    nIntersects <- Inf
-  }
-
-  cnt_df <- plyr::count(binary_mat) %>%
-    arrange(., desc(freq))
-  cnt_df <- cnt_df[seq_len(min(nIntersects, nrow(cnt_df))),]
-  row.names(cnt_df) <- paste0('intersect_', seq(1,nrow(cnt_df)))
-  colnames(cnt_df) <-  gsub('x\\.','', colnames(cnt_df))
-
-  # Data for X-top margin plot
-  intersect_data <-
-    data.frame(intersect_set_size=cnt_df$freq,
-               intersect_degree=rowSums(cnt_df[,seq(1, ncol(cnt_df) -1 )])) %>%
-    rownames_to_column(., 'intersect_id')
-
-  if(is.null(intersectLevels)){
-    intersectLevels <-
-      dplyr::arrange(intersect_data, desc(intersect_set_size)) %>%
-      pull(1)
-  }
-  intersect_data <-
-    intersect_data[intersect_data$intersect_id %in% intersectLevels,]
-  intersect_data$intersect_id <-
-    factor(intersect_data$intersect_id, levels=intersectLevels)
-
-  intersect_data <-
-    dplyr::arrange(intersect_data, intersect_id) %>%
-    cbind(x=seq(1, nrow(.)), .)
-
-
-  # Data for Y-right margin plot
-  set_totals <- data.frame(colSums(binary_mat)) %>%
-    rownames_to_column(.) %>%
-    setNames(., c('set_names', 'total_set_size'))
-  if(is.null(setLevels)){
-    setLevels <-
-      dplyr::arrange(set_totals, total_set_size) %>%
-      pull(1)
-  }
-  set_totals$set_names <- factor(set_totals$set_names, levels=setLevels)
-
-  set_totals <-
-    dplyr::arrange(set_totals, set_names) %>%
-    cbind(y=seq(1, nrow(.)), .)
-
-
-
-  grid_data <- cnt_df[,seq(1, ncol(cnt_df) -1)] %>%
-    as.matrix(.) %>%
-    reshape2::melt() %>%
-    setNames(., c('intersect_id', 'set_names', 'observed')) %>%
-    dplyr::filter(., intersect_id %in% intersectLevels)
-  # observed is basically a variable stating whether
-  # the row combinations exists in the original data
-  grid_data$observed <- as.logical(grid_data$observed)
-  grid_data$set_names <-
-    factor(grid_data$set_names,levels=setLevels)
-
-  grid_data$intersect_id <-
-    factor(grid_data$intersect_id,levels=intersectLevels)
-
-  ol <- list(grid_data,
-             intersect_data,
-             set_totals) %>%
-    setNames(., c('grid_data',
-                  'intersect_data',
-                  'set_totals'))
-  return(ol)
-
-}

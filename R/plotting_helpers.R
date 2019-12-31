@@ -1,56 +1,10 @@
-#' Creates a settleR plot starting from a named list of sets
-#'
-#' @inheritParams sets_to_matrix
-#' @inheritParams calc_set_overlaps
-#' @inheritParams grid_dot_plot
-#' @inheritParams make_upset_plots
-#' @inheritParams merge_upset_list
-#'
-#' @return
-#' @export
-#'
-#' @examples
-settleR_plot <- function(setList,
-                         nIntersects=15,
-                         setLevels=NULL,
-                         colMap=NULL,
-                         margSize=5){
-  upset_list <- sets_to_matrix(setList) %>%
-    calc_set_overlaps(.,
-                      nIntersects=nIntersects,
-                      setLevels=setLevels)
-  upset_plt <- make_upset_plots(upset_list, colMap) %>%
-    merge_upset_list(.,)
-  return(upset_plt)
-}
+##### File for SettleR plotting functions ####
+# This file contains all of the functions for
+# creating the SettleR plots. These are currently
+# mostly set to be internal, but documented.
 
-#' wrapper to save the upset plot created by settleR_plot
-#'
-#' Essentially, this is just a wrapper around ggsave. The difference is that
-#' plot size is automatically calculated.
-#' @param upset_plt an upset_plt gtabl object
-#' @param fn file name
-#'
-#' @importFrom magrittr multiply_by
-#' @importFrom gtable gtable_height gtable_width
-#' @importFrom grid convertHeight
-#' @return
-#' @export
-#'
-#' @examples
-settleR_save <- function(upset_plt, fn){
-  hght <- gtable_height(upset_plt) %>%
-    convertHeight(., 'cm', valueOnly = TRUE) %>%
-    multiply_by(1.125) %>%
-    round(., 1)
-  wdth <- gtable_width(upset_plt) %>%
-    convertHeight(., 'cm', valueOnly = TRUE) %>%
-    multiply_by(1.125) %>%
-    round(., 1)
-  ggsave(fn, upset_plt, width = wdth, height = hght, units = 'cm')
 
-}
-
+#### Making the plots ####
 #' Creates ggplot bars of set size
 #'
 #' bottom left plot which shows the size of the sets
@@ -58,7 +12,7 @@ settleR_save <- function(upset_plt, fn){
 #' @param set_totals data.frame with y, set_names, total_set_size as columns
 #'
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @examples
 set_totals_bar_plot <- function(set_totals){
@@ -94,7 +48,7 @@ set_totals_bar_plot <- function(set_totals){
 #' @param intersect_data data.frame with x, intersect_id, intersect_set_size, and intersect_degree as columns
 #'
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @importFrom grid grobTree textGrob gpar
 #'
@@ -131,7 +85,7 @@ intersect_bar_plot <- function(intersect_data){
 #' @param colMap optional named vector specifying text colours of y-axis labels
 #'
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @examples
 grid_dot_plot <- function(grid_data, dot_size=6.25, colMap=NULL){
@@ -193,7 +147,7 @@ grid_dot_plot <- function(grid_data, dot_size=6.25, colMap=NULL){
 #' @param colMap optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}
 #' @importFrom stats setNames
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @examples
 make_upset_plots <- function(upset_list, colMap=NULL){
@@ -221,7 +175,7 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 #' @param margSize sets height or width of plots in margin size in cm
 #'
 #' @return
-#' @export
+#' @keywords internal
 #'
 #' @examples
 merge_upset_list <- function(plt_list, margSize=5){
@@ -271,7 +225,7 @@ merge_upset_list <- function(plt_list, margSize=5){
 #' @param height also an int
 #'
 #' @return gtable object
-#' @export
+#' @keywords internal
 #' @importFrom grid unit
 #' @examples
 set_panel_size <- function(g, width=4, height=4){
@@ -291,4 +245,86 @@ set_panel_size <- function(g, width=4, height=4){
 }
 
 
+
+#### ggplot2 themes ####
+#' Modified ggplot2 theme
+#'
+#' This just returns a modifed version of \link[ggplot2]{theme_void}
+#' @param base_size font size
+#'
+#' @return
+#' @export
+#'
+#' @examples
+theme_empty <- function(base_size=15){
+  half_line <- base_size/2
+  custom_theme <-
+    theme(line = element_blank(),
+          rect = element_blank(),
+          text = element_text(
+            face = "bold",
+            colour = "black",
+            size = base_size,
+            lineheight = 0.9,
+            hjust = 0.5,
+            vjust = 0.5,
+            angle = 0,
+            margin = margin(),
+            debug = FALSE),
+
+          axis.title = element_blank(),
+          axis.ticks.length = unit(0, "pt"),
+
+
+          legend.position = "none",
+          plot.margin = unit(c(0, 0, 0, 0), "lines")
+    )
+  return(custom_theme)
+}
+
+
+#### Misc plotting functions ####
+
+#' Returns x and y coords of a bounding box for a particular intersect
+#'
+#'
+#'
+#' @param grid_data_plot ggplot object, for example a plot created by \link[settleR]{grid_dot_plot} or similiar plots
+#' @param intersects_to_box Vector of intercepts which specify intercepts to draw a box around
+#' @param box_pad padding surrounding the box
+#'
+#' @return
+#' @export
+#'
+#' @examples
+box_intercepts_dims <- function(grid_data_plot,
+                                intersects_to_box,
+                                box_pad=.375){
+
+  #TODO make this accept integer idx instead of
+  # intersect str
+
+  if(all(class(grid_data_plot) !=  c('gg', 'ggplot'))){
+    stop('grid_data_plot needs to be a ggplot2 object')
+  }
+  plt_build <- ggplot_build(grid_data_plot)
+  orig_inter_order <- levels(plt_build$plot$data$intersect_id)
+
+  coord_pos <-  plt_build[['data']][[2]] %>%
+    group_by(., group) %>%
+    summarise(
+      xmin=min(x) - box_pad,
+      xmax=max(x) + box_pad,
+      ymin=min(y) - box_pad,
+      ymax=max(y) + box_pad
+    )
+  coord_pos <- cbind(orig_inter_order,
+                     coord_pos)
+  names(coord_pos)[1] <- 'intersect_id'
+  coord_pos <-
+    coord_pos[coord_pos$intersect_id %in% intersects_to_box,]
+  coord_pos$intersect_id <- as.character(coord_pos$intersect_id)
+  return(coord_pos)
+
+}
 

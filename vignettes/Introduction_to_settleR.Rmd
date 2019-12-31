@@ -39,8 +39,11 @@ gene_setlist <-
   system.file('extdata','ex_gene_setlist.rds', package = 'settleR') %>% 
   readRDS(.)
 
-p <-  settleR_plot(gene_setlist)
-grid.draw(p)
+# Creating the SettleR object
+setobj <- SettleR(gene_setlist)
+
+# Plotting to the device
+
 ```
 
 
