@@ -10,5 +10,5 @@ make_settleR_plots(settleRObject)
 \item{settleRObject}{\link[settleR]{SettleR} object created by the constructor function.}
 }
 \description{
-Creates the 3 plots for a settleR plot
+TODO incorperate this function into the SettleR validity checking
 }

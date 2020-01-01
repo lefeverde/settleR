@@ -251,6 +251,7 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     object@setLevels <- value
+    object <- make_settleR_plots(object)
     return(object)
   })
 ### intersectLevels ####
@@ -271,6 +272,7 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     object@intersectLevels <- value
+    object <- make_settleR_plots(object)
     return(object)
   })
 ### colMap ####
@@ -291,5 +293,72 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     object@colMap <- value
+    object <- make_settleR_plots(object)
+    return(object)
+  })
+
+### gridPlot ####
+#' @export
+#' @rdname accessors
+setGeneric('gridPlot', function(object){standardGeneric('gridPlot')})
+setMethod(
+  f = 'gridPlot',
+  signature = 'SettleR',
+  definition = function(object){
+    return(plotList(object)$gridPlot)
+  })
+#' @export
+#' @rdname accessors
+setGeneric('gridPlot<-', function(object,value){standardGeneric('gridPlot<-')})
+setReplaceMethod(
+  f = 'gridPlot',
+  signature = 'SettleR',
+  definition = function(object, value){
+    plotList(object)$gridPlot <- value
+    plotList(object) <- merge_upset_list(plotList(object))
+    return(object)
+  })
+
+### intersectPlotX ####
+#' @export
+#' @rdname accessors
+setGeneric('intersectPlotX', function(object){standardGeneric('intersectPlotX')})
+setMethod(
+  f = 'intersectPlotX',
+  signature = 'SettleR',
+  definition = function(object){
+    return(plotList(object)$intersectPlotX)
+  })
+#' @export
+#' @rdname accessors
+setGeneric('intersectPlotX<-', function(object,value){standardGeneric('intersectPlotX<-')})
+setReplaceMethod(
+  f = 'intersectPlotX',
+  signature = 'SettleR',
+  definition = function(object, value){
+    plotList(object)$intersectPlotX <- value
+    plotList(object) <- merge_upset_list(plotList(object))
+    return(object)
+  })
+
+### setPlotY ####
+#' @export
+#' @rdname accessors
+setGeneric('setPlotY', function(object){standardGeneric('setPlotY')})
+setMethod(
+  f = 'setPlotY',
+  signature = 'SettleR',
+  definition = function(object){
+    return(plotList(object)$setPlotY)
+  })
+#' @export
+#' @rdname accessors
+setGeneric('setPlotY<-', function(object,value){standardGeneric('setPlotY<-')})
+setReplaceMethod(
+  f = 'setPlotY',
+  signature = 'SettleR',
+  definition = function(object, value){
+    plotList(object)$setPlotY <- value
+    plotList(object) <- merge_upset_list(plotList(object))
     return(object)
   })

@@ -69,8 +69,6 @@ create_count_df <- function(binary_mat){
 }
 
 
-
-
 #### Functions for testing #####
 
 #' loads data for testing

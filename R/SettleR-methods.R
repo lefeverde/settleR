@@ -5,6 +5,8 @@
 
 #' Creates the 3 plots for a settleR plot
 #'
+#' TODO incorperate this function into the SettleR validity checking
+#'
 #' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
 #'
 #' @import dplyr
@@ -48,6 +50,11 @@ make_settleR_plots <- function(settleRObject){
            levels = setLevels(settleRObject))
 
   #### Plots ####
+  # Kind of kludgey where I put the plots in
+  # an S3 list. However, I currently think this
+  # is the easiest to use with the getters/setters,
+  # since I need to create them first and then
+  # merge them to create the SettleR plot.
   gridPlot <-
     grid_dot_plot(gridData,
                   colMap = colMap(settleRObject))
@@ -131,7 +138,7 @@ reorder_by_singletons <- function(settleRObject){
 
   original_intersects <- intersectLevels(settleRObject)
 
-  all_gd <- gridData(settler_object) %>%
+  all_gd <- gridData(settleRObject) %>%
     filter(., observed)
 
   singleton_intersects <- all_gd %>%
@@ -148,6 +155,7 @@ reorder_by_singletons <- function(settleRObject){
   original_intersects <-
     original_intersects[!original_intersects %in% singleton_intersects]
   intersect_lvls <- c(singleton_intersects, original_intersects)
-  return(intersect_lvls)
+  intersectLevels(settleRObject) <- intersect_lvls
+  return(settleRObject)
 
 }

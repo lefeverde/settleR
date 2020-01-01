@@ -22,8 +22,9 @@ test_that('reorder_by_singletons produces correctly ordered intersects',{
               "intersect_12",
               "intersect_15"
   )
-  o_lvls <- reorder_by_singletons(settler_object)
-  expect_equal(e_lvls, o_lvls)
+  tmp_setobj <-
+    reorder_by_singletons(settler_object)
+  expect_equal(e_lvls, intersectLevels(tmp_setobj))
 
 })
 # TODO test make_settleR_plots

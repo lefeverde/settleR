@@ -43,17 +43,83 @@ gene_setlist <-
 setobj <- SettleR(gene_setlist)
 
 # Plotting to the device
-
+settleR_plot(setobj)
+```
+## Recommend way of saving a plot
+You're free to save the plot anyway you like, which is likely different depending on your workflow. I personally end up spending a great deal of time perfecting the dimensions of my plots. The settleR plots are no different. However, I've managed to automate this through trial & error for these plots. Once the plot is to your liking, I recommend using the `settleR_save` to save the plot. 
+```{r}
+# Recommended way to save the plot
+settleR_save(setobj, 'example_settleR_plot.pdf')
 ```
 
-
+# settleR plot customizations
 ## Adding color to the groups 
+You can create a `SettleR` plot with colour coded names on the left side of the grid plot. To do this, pass a named vector of colours which match the names of the groups. This can be done by either passing the `colMap` parameter while the object is initilized, or after.
+
 ```{r}
 col_map <- 
   system.file('extdata','ex_col_map.rds', package = 'settleR') %>% 
   readRDS(.)
 
+
+# Creating the SettleR object w/ colors
+setobj <- SettleR(gene_setlist, colMap = col_map)
+
+# Changning the colors on a created object
+colMap(setobj) <- col_map
+
+# Plotting to the device
+settleR_plot(setobj)
+
 ```
+## Specifying the order of the groups
+This is an example of how you can control the order of the groups in the plot. 
+```{r}
+
+set_levels <- 
+  system.file('extdata','ex_set_levels.rds', package = 'settleR') %>% 
+  readRDS(.)
+
+# Creating the SettleR object ordered groups
+setobj <- SettleR(gene_setlist, setLevels = set_levels)
+
+# Changning group order on a created object
+setLevels(setobj) <- set_levels
+
+
+# Plotting to the device
+settleR_plot(setobj)
+
+```
+## Place the singleton intersects first 
+It can be helpful to see which items are exclusive to a given group. I've dubbed these singletons, and can be placed in the front of the plot.
+```{r}
+setobj <- SettleR(gene_setlist, setLevels = set_levels)
+setobj <- reorder_by_singletons(setobj)
+settleR_plot(setobj)
+
+```
+
+
+
+
+# Advanced customizations
+## Modifications of the underlying ggplots
+This is where `settleR` really shines. As described in the intro, I made this package with modularity in mind. Below is an example of how you can modify one of the underlying `ggplot`s, then put this back into the `SettleR` object and then make a new `settleRPlot`. A simple example for illustrative purposes is shown below.
+```{r}
+# Getting the grid plot
+tmp_plt <- gridPlot(setobj)
+# Making modifications to the text using "theme" from ggplot2 
+tmp_plt <- tmp_plt + 
+  theme(axis.text.y = element_text(colour = 'blue', face="bold", size = rel(.875)), 
+        axis.text.x = element_text(colour='red', face='italic', size = rel(1.25)))
+# Updating the SettleR object with the modified plot
+gridPlot(setobj) <- tmp_plt
+
+
+
+```
+
 ## Adding boxes around specific groups 
 ```{r, eval=FALSE}
 setLevels <- 

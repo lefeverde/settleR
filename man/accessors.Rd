@@ -16,6 +16,12 @@
 \alias{intersectLevels<-}
 \alias{colMap}
 \alias{colMap<-}
+\alias{gridPlot}
+\alias{gridPlot<-}
+\alias{intersectPlotX}
+\alias{intersectPlotX<-}
+\alias{setPlotY}
+\alias{setPlotY<-}
 \title{Setters and Getters}
 \usage{
 gridData(object)
@@ -45,6 +51,18 @@ intersectLevels(object) <- value
 colMap(object)
 
 colMap(object) <- value
+
+gridPlot(object)
+
+gridPlot(object) <- value
+
+intersectPlotX(object)
+
+intersectPlotX(object) <- value
+
+setPlotY(object)
+
+setPlotY(object) <- value
 }
 \description{
 Place to put all documentation for Setters and Getters
