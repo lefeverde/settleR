@@ -179,9 +179,7 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 #'
 #' @examples
 merge_upset_list <- function(plt_list, margSize=5){
-  if(!all(names(plt_list) %in% c("gridPlot","intersectPlotX","setPlotY"))){
-    stop('upset_list needs to be a named list with ggplot2 objects named: gridPlot, intersectPlotX, and setPlotY')
-  }
+
   # Gets dims of grid matrix
   grid_dims <- plt_list$gridPlot$data %>%
     filter(., observed) %>%
@@ -299,7 +297,7 @@ theme_empty <- function(base_size=15){
 #' @examples
 box_intercepts_dims <- function(grid_data_plot,
                                 intersects_to_box,
-                                box_pad=.375){
+                                box_pad=.5125){
 
   #TODO make this accept integer idx instead of
   # intersect str

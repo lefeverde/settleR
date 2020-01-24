@@ -315,7 +315,7 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     plotList(object)$gridPlot <- value
-    plotList(object) <- merge_upset_list(plotList(object))
+    plotList(object)$settleRPlot <- merge_upset_list(plotList(object))
     return(object)
   })
 
@@ -337,7 +337,7 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     plotList(object)$intersectPlotX <- value
-    plotList(object) <- merge_upset_list(plotList(object))
+    plotList(object)$settleRPlot <- merge_upset_list(plotList(object))
     return(object)
   })
 
@@ -359,6 +359,6 @@ setReplaceMethod(
   signature = 'SettleR',
   definition = function(object, value){
     plotList(object)$setPlotY <- value
-    plotList(object) <- merge_upset_list(plotList(object))
+    plotList(object)$settleRPlot <- merge_upset_list(plotList(object))
     return(object)
   })

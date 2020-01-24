@@ -33,7 +33,8 @@ library(grid)
 
 ```
 # Creating a basic plot 
-```{r, out.width="50%"}
+
+```{r}
 # Loads an example setlist 
 gene_setlist <- 
   system.file('extdata','ex_gene_setlist.rds', package = 'settleR') %>% 
@@ -45,8 +46,10 @@ setobj <- SettleR(gene_setlist)
 # Plotting to the device
 settleR_plot(setobj)
 ```
+
 ## Recommend way of saving a plot
 You're free to save the plot anyway you like, which is likely different depending on your workflow. I personally end up spending a great deal of time perfecting the dimensions of my plots. The settleR plots are no different. However, I've managed to automate this through trial & error for these plots. Once the plot is to your liking, I recommend using the `settleR_save` to save the plot. 
+
 ```{r}
 # Recommended way to save the plot
 settleR_save(setobj, 'example_settleR_plot.pdf')
@@ -72,6 +75,7 @@ colMap(setobj) <- col_map
 settleR_plot(setobj)
 
 ```
+
 ## Specifying the order of the groups
 This is an example of how you can control the order of the groups in the plot. 
 ```{r}
@@ -91,6 +95,7 @@ setLevels(setobj) <- set_levels
 settleR_plot(setobj)
 
 ```
+
 ## Place the singleton intersects first 
 It can be helpful to see which items are exclusive to a given group. I've dubbed these singletons, and can be placed in the front of the plot.
 ```{r}
@@ -115,35 +120,36 @@ tmp_plt <- tmp_plt +
         axis.text.x = element_text(colour='red', face='italic', size = rel(1.25)))
 # Updating the SettleR object with the modified plot
 gridPlot(setobj) <- tmp_plt
-
+settleR_plot(setobj)
 
 
 ```
 
 ## Adding boxes around specific groups 
+Here's a more complicated example. I had a need of highlighting specific intersects on the plot. The solution I cam up with is to draw a red box around the intersect(s) of interest. The function to include the dimensions is included in `settleR`. 
+
+
 ```{r, eval=FALSE}
-setLevels <- 
-  system.file('extdata','ex_set_levels.rds', package = 'settleR') %>% 
-  readRDS(.)
 
-intersect_lvls <- get_reordered_intersect_lvls(gene_setlist,
-                                               setLevels = setLevels,
-                                               nIntersects = 15)
+# Extracting the grid plot and intersect levels
+tmp_plt <-  gridPlot(setobj)
+intersect_lvls <- intersectLevels(setobj)
 
-bm <- sets_to_matrix(gene_setlist) %>% 
-  calc_set_overlaps(., setLevels = setLevels, 
-                    intersectLevels = intersect_lvls) 
-  
-ul <- make_upset_plots(bm, col_map = col_map)
+# Getting the dimensions for the box
 bound_boxes <- intersect_lvls[c(10:13)] %>% 
-  box_intercepts_dims(ul$pmain, .)
-pmain <- ul$pmain + 
+  box_intercepts_dims(tmp_plt, .)
+
+# Using geom_rect to draw red boxes 
+tmp_plt <- tmp_plt + 
   geom_rect(data=bound_boxes,aes(xmin=xmin, xmax=xmax, ymin=ymin,ymax=ymax), 
             inherit.aes = FALSE, 
             color='red', 
             fill=NA,
-            size=1.5
+            size=.75
   )
+# Replacing the modified gridPlot 
+gridPlot(setobj) <- tmp_plt
+settleR_plot(setobj)
 
 ```
 # Creating Venn Diagram
