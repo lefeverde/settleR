@@ -7,7 +7,10 @@
 settleR_plot(settleRObject)
 }
 \arguments{
-\item{settleRObject}{}
+\item{settleRObject}{\link[settleR]{SettleR} object created by the constructor function.}
+}
+\value{
+plot drawn on the device
 }
 \description{
 Plots the settleR plot on the device

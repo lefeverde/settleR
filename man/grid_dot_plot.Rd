@@ -13,6 +13,9 @@ grid_dot_plot(grid_data, dot_size = 6.25, colMap = NULL)
 
 \item{colMap}{optional named vector specifying text colours of y-axis labels}
 }
+\value{
+gridPlot
+}
 \description{
 Plotting showing the grids
 }

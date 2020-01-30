@@ -11,7 +11,7 @@
 #'
 #' @param set_totals data.frame with y, set_names, total_set_size as columns
 #'
-#' @return
+#' @return setPlotY
 #' @keywords internal
 #'
 #' @examples
@@ -19,11 +19,9 @@ set_totals_bar_plot <- function(set_totals){
   p <- ggplot(data=set_totals, aes(x=set_names, y=total_set_size)) +
     geom_bar(stat='identity', width = .5) +
     coord_flip() +
-    ggrepel::geom_label_repel(aes(y=total_set_size,
+    geom_label(aes(y=total_set_size,
                    label=total_set_size),
-               hjust=1,
-               min.segment.length=.001) +
-
+               hjust=1) +
     theme_void() +
     theme(aspect.ratio = .5,
           plot.margin = margin(0,0,0,0))
@@ -47,23 +45,23 @@ set_totals_bar_plot <- function(set_totals){
 #'
 #' @param intersect_data data.frame with x, intersect_id, intersect_set_size, and intersect_degree as columns
 #'
-#' @return
+#' @return intersectPlotX
 #' @keywords internal
 #'
 #' @importFrom grid grobTree textGrob gpar
+#' @importFrom ggrepel geom_label_repel
 #'
 #' @examples
 intersect_bar_plot <- function(intersect_data){
 
-  p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
-    geom_bar(stat='identity', width = .5) +
-    ggrepel::geom_label_repel(aes(y=intersect_set_size,
-                                  label=intersect_set_size),
-                              vjust=1,
-                              min.segment.length=.001) +
-
+    p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
+    geom_bar(stat='identity', width = .75) +
+    geom_label_repel(aes(y=intersect_set_size,
+                   label=intersect_set_size),
+               vjust=1) +
     theme_void()
-  p <- p + theme(plot.margin = margin(0,0,0,0),
+
+    p <- p + theme(plot.margin = margin(0,0,0,0),
                aspect.ratio = .5)
 
   axis_title <-  grobTree(textGrob("Size of overlap",
@@ -84,7 +82,7 @@ intersect_bar_plot <- function(intersect_data){
 #' @param dot_size size of dot
 #' @param colMap optional named vector specifying text colours of y-axis labels
 #'
-#' @return
+#' @return gridPlot
 #' @keywords internal
 #'
 #' @examples
@@ -146,7 +144,9 @@ grid_dot_plot <- function(grid_data, dot_size=6.25, colMap=NULL){
 #' @param upset_list list of data.frames from \link[settleR]{calc_set_overlaps}
 #' @param colMap optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}
 #' @importFrom stats setNames
-#' @return
+#'
+#' @return list of 3 upset plots
+#'
 #' @keywords internal
 #'
 #' @examples
@@ -174,7 +174,7 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 #' @param plt_list list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured
 #' @param margSize sets height or width of plots in margin size in cm
 #'
-#' @return
+#' @return  a merged settleR plot
 #' @keywords internal
 #'
 #' @examples
@@ -226,6 +226,7 @@ merge_upset_list <- function(plt_list, margSize=5){
 #' @keywords internal
 #' @importFrom grid unit
 #' @examples
+#'
 set_panel_size <- function(g, width=4, height=4){
   width <-  unit(width, "cm")
   height <- unit(height, "cm")

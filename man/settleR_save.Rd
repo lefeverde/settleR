@@ -11,6 +11,9 @@ settleR_save(settleRObject, fn)
 
 \item{fn}{file name}
 }
+\value{
+saved settleR plot
+}
 \description{
 Essentially, this is just a wrapper around ggsave. The difference is that
 plot size is automatically calculated.

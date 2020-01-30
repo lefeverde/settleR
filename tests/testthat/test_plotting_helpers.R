@@ -9,7 +9,7 @@ test_that('box_intercepts_dims returns bounding box over the specified intersect
   box_dims <- box_intercepts_dims(ul$gridPlot, intersects_to_box =  'intersect_14')
   row.names(box_dims) <- NULL
   e_box_dims <-
-    matrix(data = c("intersect_14", 14, 13.625, 14.375, 4.625, 5.375), nrow = 1, ncol = 6) %>%
+    matrix(data = c("intersect_14", 14, 13.4875, 14.5125, 4.4875, 5.5125), nrow = 1, ncol = 6) %>%
     data.frame(., stringsAsFactors = FALSE) %>%
     setNames(., c("intersect_id","group","xmin","xmax","ymin","ymax"))
 

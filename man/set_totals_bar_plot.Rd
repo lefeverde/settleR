@@ -9,6 +9,9 @@ set_totals_bar_plot(set_totals)
 \arguments{
 \item{set_totals}{data.frame with y, set_names, total_set_size as columns}
 }
+\value{
+setPlotY
+}
 \description{
 bottom left plot which shows the size of the sets
 }

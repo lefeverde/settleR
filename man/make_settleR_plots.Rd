@@ -9,6 +9,9 @@ make_settleR_plots(settleRObject)
 \arguments{
 \item{settleRObject}{\link[settleR]{SettleR} object created by the constructor function.}
 }
+\value{
+
+}
 \description{
 TODO incorperate this function into the SettleR validity checking
 }

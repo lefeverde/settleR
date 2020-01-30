@@ -4,6 +4,9 @@
 \name{SettleR-class}
 \alias{SettleR-class}
 \title{SettleR class}
+\value{
+
+}
 \description{
 This is the class which stores all the data for creating a
 settleR plot. It should be created through using the

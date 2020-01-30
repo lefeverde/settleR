@@ -6,6 +6,9 @@
 \usage{
 get_example_data()
 }
+\value{
+
+}
 \description{
 loads data for testing
 }

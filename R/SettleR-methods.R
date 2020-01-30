@@ -80,7 +80,7 @@ make_settleR_plots <- function(settleRObject){
 #' @importFrom magrittr multiply_by
 #' @importFrom gtable gtable_height gtable_width
 #' @importFrom grid convertHeight
-#' @return
+#' @return saved settleR plot
 #' @export
 #'
 #' @examples
@@ -103,11 +103,11 @@ settleR_save <- function(settleRObject, fn){
 
 #' Plots the settleR plot on the device
 #'
-#' @param settleRObject
+#' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
 #'
 #' @importFrom cowplot ggdraw
 #'
-#' @return
+#' @return plot drawn on the device
 #' @export
 #'
 #' @examples
@@ -126,7 +126,7 @@ settleR_plot <- function(settleRObject){
 #' number of intersects and the remaining are
 #' ordered from largest to smallest like normal.
 #'
-#' @inheritParams sets_to_matrix
+#' @param settleRObject \link[settleR]{SettleR} object created by the constructor function.
 #'
 #'
 #' @return

@@ -9,7 +9,7 @@
 #' @param nIntersects Integer number of intersects to show (default: 15)
 #' @param colMap Optional named vector specifying text colours of y-axis labels
 #'
-#' @return
+#' @return SettleR object
 #' @export
 #'
 #' @examples
@@ -89,8 +89,11 @@ SettleR <- function(setList,
 }
 
 
-#### SettleR roxygen block ####
+##### Setters and Getters #####
 #' @title Setters and Getters
+#'
+#' @param object a SettleR object to get from
+#' @param value an object to either set/get from slot
 #'
 #' @description Place to put all documentation for Setters and Getters
 #' @name accessors
@@ -144,12 +147,13 @@ setClass('SettleR',
            nIntersects='numeric'
          )
 )
-### show ###
+### show ####
 setMethod(f = 'show',
           signature = 'SettleR',
           definition = function(object){
             out_str <- 'SettleR class'
             cat(out_str)
+            settleR_plot(object)
       })
 
 ### gridData ####

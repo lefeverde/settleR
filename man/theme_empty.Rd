@@ -9,6 +9,9 @@ theme_empty(base_size = 15)
 \arguments{
 \item{base_size}{font size}
 }
+\value{
+
+}
 \description{
 This just returns a modifed version of \link[ggplot2]{theme_void}
 }

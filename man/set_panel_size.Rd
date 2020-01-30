@@ -21,4 +21,7 @@ This sets the size of ggplot grob object to fixed
 sizes. I've adapted this from \url{https://stackoverflow.com/a/30571289}.
 The height and width parameters are in cm. May change in future.
 }
+\examples{
+
+}
 \keyword{internal}

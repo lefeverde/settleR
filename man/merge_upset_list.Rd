@@ -11,6 +11,9 @@ merge_upset_list(plt_list, margSize = 5)
 
 \item{margSize}{sets height or width of plots in margin size in cm}
 }
+\value{
+a merged settleR plot
+}
 \description{
 Merges list of ggplot upset into gtable object
 }

@@ -6,6 +6,12 @@
 \usage{
 reorder_by_singletons(settleRObject)
 }
+\arguments{
+\item{settleRObject}{\link[settleR]{SettleR} object created by the constructor function.}
+}
+\value{
+
+}
 \description{
 Intersect levels are reordered such that the
 exclusive  singleton sets are the first n

@@ -64,6 +64,11 @@ setPlotY(object)
 
 setPlotY(object) <- value
 }
+\arguments{
+\item{object}{a SettleR object to get from}
+
+\item{value}{an object to either set/get from slot}
+}
 \description{
 Place to put all documentation for Setters and Getters
 }

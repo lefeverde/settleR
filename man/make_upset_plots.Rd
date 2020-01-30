@@ -11,6 +11,9 @@ make_upset_plots(upset_list, colMap = NULL)
 
 \item{colMap}{optional named vector specifying text colours of y-axis labels in \link[settleR]{grid_dot_plot}}
 }
+\value{
+list of 3 upset plots
+}
 \description{
 This is a wrapper which just wraps the creation
 of the 3 plots for required for an upset plot.

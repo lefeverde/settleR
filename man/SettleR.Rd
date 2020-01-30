@@ -4,8 +4,13 @@
 \alias{SettleR}
 \title{Constructor for SettleR class}
 \usage{
-SettleR(setList, intersectLevels = NULL, setLevels = NULL,
-  nIntersects = 15, colMap = NULL)
+SettleR(
+  setList,
+  intersectLevels = NULL,
+  setLevels = NULL,
+  nIntersects = 15,
+  colMap = NULL
+)
 }
 \arguments{
 \item{setList}{List of sets}
@@ -17,6 +22,9 @@ SettleR(setList, intersectLevels = NULL, setLevels = NULL,
 \item{nIntersects}{Integer number of intersects to show (default: 15)}
 
 \item{colMap}{Optional named vector specifying text colours of y-axis labels}
+}
+\value{
+SettleR object
 }
 \description{
 Constructor for SettleR class
