@@ -68,6 +68,30 @@ create_count_df <- function(binary_mat){
   return(cnt_df)
 }
 
+#' Returns the items exclusive to a particular set
+#'
+#' @inheritParams sets_to_matrix
+#' @param setLevelCombo combination of the setLevels (see \link[settleR]{SettleR})
+#'
+#' @return vector of items
+#'
+#' @importFrom purrr reduce
+#'
+#' @export
+#'
+#' @examples
+get_exlcusive_items <- function(setList, setLevelCombo){
+  overlap_set <- setList[setLevelCombo] %>%
+    reduce(.,  .f = intersect)
+  items_to_remove <-
+    setList[!names(setList) %in% setLevelCombo] %>%
+    unlist(.) %>%
+    unique(.)
+  overlap_set <-
+    overlap_set[!overlap_set %in% items_to_remove]
+  return(overlap_set)
+}
+
 
 #### Functions for testing #####
 

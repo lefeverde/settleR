@@ -1,1 +1,10 @@
 .Rproj.user
+tmp.R
+tmp_functions.R
+.DS_Store
+.Rhistory
+test.Rdata
+inst/doc
+doc
+Meta
+.gitignore

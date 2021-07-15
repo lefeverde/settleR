@@ -1,6 +1,10 @@
 ---
-title: "Introduction_to_settleR"
-output: rmarkdown::html_vignette
+title: "Introduction to settleR"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 8
+    fig_height: 5
+
 vignette: >
   %\VignetteIndexEntry{Introduction_to_settleR}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,6 +16,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+options(width = 500)
 ```
 
 # Introduction 
@@ -129,7 +134,7 @@ settleR_plot(setobj)
 Here's a more complicated example. I had a need of highlighting specific intersects on the plot. The solution I cam up with is to draw a red box around the intersect(s) of interest. The function to include the dimensions is included in `settleR`. 
 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 
 # Extracting the grid plot and intersect levels
 tmp_plt <-  gridPlot(setobj)

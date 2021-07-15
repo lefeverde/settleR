@@ -1,3 +1,6 @@
 ^settleR\.Rproj$
 ^\.Rproj\.user$
 ^.*\.Rproj$
+^LICENSE\.md$
+^doc$
+^Meta$

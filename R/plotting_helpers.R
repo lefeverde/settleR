@@ -21,10 +21,12 @@ set_totals_bar_plot <- function(set_totals){
     coord_flip() +
     geom_label(aes(y=total_set_size,
                    label=total_set_size),
-               hjust=1) +
+               hjust=-.1) +
     theme_void() +
     theme(aspect.ratio = .5,
-          plot.margin = margin(0,0,0,0))
+          plot.margin = margin(0,10,0,0))
+  p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
+
   # This adds a title without messing up the
   # alignment via cowplot
   axis_title <-  grobTree(textGrob("Size of set",
@@ -50,29 +52,31 @@ set_totals_bar_plot <- function(set_totals){
 #'
 #' @importFrom grid grobTree textGrob gpar
 #' @importFrom ggrepel geom_label_repel
+#' @importFrom ggtext geom_richtext
 #'
 #' @examples
 intersect_bar_plot <- function(intersect_data){
 
     p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
-    geom_bar(stat='identity', width = .75) +
-    geom_label_repel(aes(y=intersect_set_size,
-                   label=intersect_set_size),
-               vjust=1) +
-    theme_void()
+      geom_bar(stat='identity', width = .75) +
+      geom_richtext(aes(y=(intersect_set_size), label=intersect_set_size), angle = 45, vjust=-.05, hjust=-.05) +
+      # geom_label_repel(aes(y=intersect_set_size,
+      #                      label=intersect_set_size),
+      #                  # vjust=1,
+      #                  min.segment.length=0) +
+      theme_void()
 
-    p <- p + theme(plot.margin = margin(0,0,0,0),
-               aspect.ratio = .5)
-
-  axis_title <-  grobTree(textGrob("Size of overlap",
-                                   x=0.25,
-                                   y=1.05,
-                                   hjust=0,
-                                   gp=gpar(col="black",
-                                           fontsize=18,
-                                           fontface="bold")))
-  p <- p + annotation_custom(axis_title)
-  return(p)
+    p <- p + theme(plot.margin = margin(10,0,0,0), aspect.ratio = .5)
+    p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
+    axis_title <-  grobTree(textGrob("Size of overlap",
+                                     x=0.35,
+                                     y=1,
+                                     hjust=0,
+                                     gp=gpar(col="black",
+                                             fontsize=18,
+                                             fontface="bold")))
+    p <- p + annotation_custom(axis_title)
+    return(p)
 
 }
 
@@ -86,7 +90,7 @@ intersect_bar_plot <- function(intersect_data){
 #' @keywords internal
 #'
 #' @examples
-grid_dot_plot <- function(grid_data, dot_size=6.25, colMap=NULL){
+grid_dot_plot <- function(grid_data, dot_size=4.25, colMap=NULL){
   v_max <- max(1, length(unique(grid_data$intersect_id)) -1)
   v_breaks <- seq(1, v_max, by = 1)+ .5
   h_max <- max(1, length(unique(grid_data$set_names)) - 1)
@@ -199,13 +203,13 @@ merge_upset_list <- function(plt_list, margSize=5){
                                plt_list$intersectPlotX,
                                position = 'top',
                                height = grid::unit(margSize,
-                                                   'cm')) %>%
+                                                   'cm'), clip="off") %>%
 
     cowplot::insert_yaxis_grob(.,
                                plt_list$setPlotY,
                                position = 'right',
                                width = grid::unit(margSize,
-                                                  'cm'))
+                                                  'cm'), clip="off")
   return(plt_w_marg)
 }
 
