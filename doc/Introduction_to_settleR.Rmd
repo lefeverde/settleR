@@ -1,6 +1,6 @@
 ---
 title: "Introduction_to_settleR"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Introduction_to_settleR}
   %\VignetteEngine{knitr::rmarkdown}
@@ -155,10 +155,9 @@ gridPlot(setobj) <- tmp_plt
 settleR_plot(setobj)
 
 ```
-# Creating Venn Diagram
-## Creating 3-venn diagram plots 
-This is the code which I've used to make an visual represention of the overlap. It's modified from [StackExchange answer]{https://stackoverflow.com/questions/43963293/how-to-define-color-of-intersection-in-a-venn-diagram} 
-```{r, include = FALSE}
+
+
+```{r, include = FALSE, eval =FALSE}
 library(VennDiagram)
 library(sp)
 library(lefutils)
@@ -262,7 +261,7 @@ annot_text_list <- c('A only', 'A & B overlap', 'A, B, & C overlap')
 ```
 
 
-## Creating a Grid plot matching the Venn diagrams
+
 ```{r, eval=FALSE, include = FALSE}
 
 ## Making the grids 

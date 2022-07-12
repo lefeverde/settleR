@@ -70,10 +70,10 @@ intersect_bar_plot <- function(intersect_data){
     p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
     axis_title <-  grobTree(textGrob("Size of overlap",
                                      x=0.35,
-                                     y=1,
+                                     y=1.215,
                                      hjust=0,
                                      gp=gpar(col="black",
-                                             fontsize=18,
+                                             fontsize=15,
                                              fontface="bold")))
     p <- p + annotation_custom(axis_title)
     return(p)
