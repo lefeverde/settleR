@@ -1,7 +1,0 @@
-Convert package to work with S4
-Make less confusing indexing scheme
-Add object which matches coefficient names intersect IDs
-Complete Vignette
-Complete documentation with pkgdown
-Add pkgdown docs to website
-Submit package to bioconductor 
