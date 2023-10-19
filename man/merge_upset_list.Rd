@@ -2,19 +2,20 @@
 % Please edit documentation in R/plotting_helpers.R
 \name{merge_upset_list}
 \alias{merge_upset_list}
-\title{Merges list of ggplot upset into gtable object}
+\title{Uses patchwork to merge the plots}
 \usage{
-merge_upset_list(plt_list, margSize = 5)
+merge_upset_list(plt_list)
 }
 \arguments{
-\item{plt_list}{list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured}
-
-\item{margSize}{sets height or width of plots in margin size in cm}
+\item{plt_list}{}
 }
 \value{
-a merged settleR plot
+
 }
 \description{
-Merges list of ggplot upset into gtable object
+This allows the marginal plots to have an axis. I couldn't do this before with
+cowplot. I'm using this as default way to merge the plots together, but leaving
+in the old funciton. The drawback of this approach is the inability to use
+a fixed aspect ratio.
 }
 \keyword{internal}

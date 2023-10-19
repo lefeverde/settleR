@@ -4,7 +4,11 @@
 \alias{intersect_bar_plot}
 \title{Creates bar plot of the intersects}
 \usage{
-intersect_bar_plot(intersect_data)
+intersect_bar_plot(
+  intersect_data,
+  plot_title = "Size of overlap",
+  add_label = FALSE
+)
 }
 \arguments{
 \item{intersect_data}{data.frame with x, intersect_id, intersect_set_size, and intersect_degree as columns}

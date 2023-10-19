@@ -1,6 +1,6 @@
 Package: settleR
 Title: A package for creating customizable UpSet plots
-Version: 0.5.0.9000
+Version: 0.6.0.9000
 Authors@R:
     person(given = "Dan",
            family = "Lefever",
@@ -13,7 +13,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     reshape2,
     cowplot,
@@ -23,7 +23,8 @@ Imports:
     magrittr,
     gtable,
     purrr,
-    ggtext
+    ggtext,
+    patchwork
 Suggests:
     testthat,
     knitr,

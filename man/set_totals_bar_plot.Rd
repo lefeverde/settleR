@@ -4,7 +4,7 @@
 \alias{set_totals_bar_plot}
 \title{Creates ggplot bars of set size}
 \usage{
-set_totals_bar_plot(set_totals)
+set_totals_bar_plot(set_totals, plot_title = "Size of set", add_label = FALSE)
 }
 \arguments{
 \item{set_totals}{data.frame with y, set_names, total_set_size as columns}

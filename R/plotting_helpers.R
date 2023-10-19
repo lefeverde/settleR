@@ -14,29 +14,32 @@
 #' @return setPlotY
 #' @keywords internal
 #'
+#' @importFrom cowplot theme_cowplot
+#'
 #' @examples
-set_totals_bar_plot <- function(set_totals){
+set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=FALSE){
   p <- ggplot(data=set_totals, aes(x=set_names, y=total_set_size)) +
     geom_bar(stat='identity', width = .5) +
     coord_flip() +
-    geom_label(aes(y=total_set_size,
-                   label=total_set_size),
-               hjust=-.1) +
-    theme_void() +
-    theme(aspect.ratio = .5,
-          plot.margin = margin(0,10,0,0))
-  p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
+    theme_cowplot() +
+    theme(plot.margin = margin(0,10,0,0),
 
-  # This adds a title without messing up the
-  # alignment via cowplot
-  axis_title <-  grobTree(textGrob("Size of set",
-                                   x=0.1,
-                                   y=1.05,
-                                   hjust=0,
-                                   gp=gpar(col="black",
-                                           fontsize=15,
-                                           fontface="bold")))
-  p <- p + annotation_custom(axis_title)
+          axis.text.y = element_blank(),
+          axis.line.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.title.x = element_text(margin = margin(0,0,0,0)),
+          # axis.title.x = element_blank(),
+          axis.title.y = element_blank())
+  if(add_label){
+    p <- p + geom_label(aes(y=total_set_size, label=total_set_size), hjust=-.1)
+  }
+
+  p <- p +
+    scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+    labs(y=plot_title)
+
+
+
 
   return(p)
 
@@ -53,29 +56,40 @@ set_totals_bar_plot <- function(set_totals){
 #' @importFrom grid grobTree textGrob gpar
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom ggtext geom_richtext
+#' @importFrom cowplot theme_cowplot
 #'
 #' @examples
-intersect_bar_plot <- function(intersect_data){
+intersect_bar_plot <- function(intersect_data, plot_title='Size of overlap', add_label=FALSE){
 
     p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
-      geom_bar(stat='identity', width = .75) +
-      geom_richtext(aes(y=(intersect_set_size), label=intersect_set_size), angle = 45, vjust=-.05, hjust=-.05) +
+      geom_bar(stat='identity', width = .75)
+    if(add_label){
+      p <- p +
+        geom_richtext(aes(y=(intersect_set_size), label=intersect_set_size),angle = 45, vjust=-.05,hjust=-.05)
+    }
+
       # geom_label_repel(aes(y=intersect_set_size,
       #                      label=intersect_set_size),
       #                  # vjust=1,
       #                  min.segment.length=0) +
-      theme_void()
 
-    p <- p + theme(plot.margin = margin(10,0,0,0), aspect.ratio = .5)
-    p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
-    axis_title <-  grobTree(textGrob("Size of overlap",
-                                     x=0.35,
-                                     y=1.215,
-                                     hjust=0,
-                                     gp=gpar(col="black",
-                                             fontsize=15,
-                                             fontface="bold")))
-    p <- p + annotation_custom(axis_title)
+
+
+
+    p <- p +
+      theme_cowplot() +
+      theme(plot.margin = margin(10,0,0,0),
+            axis.title.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.line.x = element_blank(),
+            # axis.ticks.x = element_blank(),
+            axis.title.y = element_blank(),
+            plot.title =  element_text(hjust = .5))
+    p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+       labs(title = plot_title)
+
+
+
     return(p)
 
 }
@@ -89,34 +103,43 @@ intersect_bar_plot <- function(intersect_data){
 #' @return gridPlot
 #' @keywords internal
 #'
+#' @importFrom cowplot theme_cowplot
+#'
 #' @examples
-grid_dot_plot <- function(grid_data, dot_size=4.25, colMap=NULL){
+grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', colMap=NULL){
   v_max <- max(1, length(unique(grid_data$intersect_id)) -1)
   v_breaks <- seq(1, v_max, by = 1)+ .5
   h_max <- max(1, length(unique(grid_data$set_names)) - 1)
   h_breaks <- seq(1, h_max, by = 1)+ .5
   p <-  ggplot(data=grid_data, aes(x=intersect_id, y=set_names)) +
     geom_point(size=dot_size, alpha=.25) +
-    theme_empty()
+    theme_cowplot() +
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.line = element_blank(),
+          axis.ticks = element_blank()) #+
+    #labs(x=plot_title)
   # just plots empty dots
 
   p <- p +
     geom_line(data=grid_data[grid_data$observed,], # adds the lines
-                     aes(x=intersect_id, y=set_names, group=intersect_id),
-                     size=dot_size/3,
-                     inherit.aes = FALSE)
+              aes(x=intersect_id, y=set_names, group=intersect_id),
+              size=dot_size/3,
+              inherit.aes = FALSE,
+              alpha=.5)
+
   p <- p +
     geom_point(data=grid_data[grid_data$observed,], # Add `filled in points`
-                      aes(x=intersect_id, y=set_names),
-                      size=dot_size,
-                      inherit.aes = FALSE)
+               aes(x=intersect_id, y=set_names),
+               size=dot_size,
+               inherit.aes = FALSE)
 
   p <- p +
     geom_vline(xintercept = v_breaks) +
     geom_hline(yintercept = h_breaks)
 
-    # scale_y_discrete(label=function(x){
-    #   stringr::str_trunc(x, width = 20, side = 'center')
+  # scale_y_discrete(label=function(x){
+  #   stringr::str_trunc(x, width = 20, side = 'center')
     # })
   if(!is.null(colMap)){
     text_colours <- colMap[match( levels(grid_data$set_names), names(colMap))]
@@ -124,8 +147,7 @@ grid_dot_plot <- function(grid_data, dot_size=4.25, colMap=NULL){
   }
   # adds a numeric index to x axis
   p <- p + scale_x_discrete(labels=(seq(1, nrow(grid_data)))) +
-    theme(aspect.ratio = .5,
-          axis.text.y = element_text(size=dot_size*2,
+    theme(axis.text.y = element_text(size=dot_size*2,
                                      face='bold'),
           axis.text.x = element_text(size=dot_size*2,
                                      face='bold')
@@ -173,7 +195,10 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 }
 
 
-#' Merges list of ggplot upset into gtable object
+#' Merges list of ggplot upset into gtable object using cowplot
+#'
+#' I'm leaving this function as is, but it is deprioritized over the
+#' patchwork based merging.
 #'
 #' @param plt_list list of ggplots created from \link[settleR]{make_upset_plots} or similiarly structured
 #' @param margSize sets height or width of plots in margin size in cm
@@ -182,7 +207,7 @@ make_upset_plots <- function(upset_list, colMap=NULL){
 #' @keywords internal
 #'
 #' @examples
-merge_upset_list <- function(plt_list, margSize=5){
+cowplot_merge_upset_list <- function(plt_list, margSize=5){
 
   # Gets dims of grid matrix
   grid_dims <- plt_list$gridPlot$data %>%
@@ -213,6 +238,41 @@ merge_upset_list <- function(plt_list, margSize=5){
   return(plt_w_marg)
 }
 
+#' Uses patchwork to merge the plots
+#'
+#' This allows the marginal plots to have an axis. I couldn't do this before with
+#' cowplot. I'm using this as default way to merge the plots together, but leaving
+#' in the old funciton. The drawback of this approach is the inability to use
+#' a fixed aspect ratio.
+#'
+#' @param plt_list
+#'
+#' @return
+#' @export
+#'
+#' @keywords internal
+#'
+#' @importFrom patchwork area wrap_plots
+#'
+#' @examples
+merge_upset_list <- function(plt_list){
+  #TODO see if the fixed aspect ratio can be approximated by manually setting the dims
+
+  layout <- c(
+    area(t = 1, l = 1),
+    area(t = 2, l = 1),
+    area(t = 2, l = 2)
+  )
+
+  merged_plt <- wrap_plots(plt_list$intersectPlotX,
+                           plt_list$gridPlot,
+                           plt_list$setPlotY,
+                           design = layout ,
+                           widths = c(1, .375),
+                           heights = c(.375, 1))
+  return(merged_plt)
+
+}
 
 
 
@@ -228,7 +288,9 @@ merge_upset_list <- function(plt_list, margSize=5){
 #'
 #' @return gtable object
 #' @keywords internal
+#'
 #' @importFrom grid unit
+#'
 #' @examples
 #'
 set_panel_size <- function(g, width=4, height=4){
