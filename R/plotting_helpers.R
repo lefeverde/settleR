@@ -14,7 +14,7 @@
 #' @return setPlotY
 #' @keywords internal
 #'
-#' @importFrom cowplot theme_cowplot
+#' @importFrom cowplot theme_cowplot background_grid
 #'
 #' @examples
 set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=FALSE){
@@ -22,12 +22,13 @@ set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=
     geom_bar(stat='identity', width = .5) +
     coord_flip() +
     theme_cowplot() +
-    theme(plot.margin = margin(0,10,0,0),
+    background_grid(major = "x", minor = "x") +
+    theme(plot.margin = margin(0,0,0,0),
 
           axis.text.y = element_blank(),
           axis.line.y = element_blank(),
           axis.ticks.y = element_blank(),
-          axis.title.x = element_text(margin = margin(0,0,0,0)),
+          axis.title.x = element_text(margin = margin(10,0,0,0)),
           # axis.title.x = element_blank(),
           axis.title.y = element_blank())
   if(add_label){
@@ -56,7 +57,7 @@ set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=
 #' @importFrom grid grobTree textGrob gpar
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom ggtext geom_richtext
-#' @importFrom cowplot theme_cowplot
+#' @importFrom cowplot theme_cowplot background_grid
 #'
 #' @examples
 intersect_bar_plot <- function(intersect_data, plot_title='Size of overlap', add_label=FALSE){
@@ -78,9 +79,11 @@ intersect_bar_plot <- function(intersect_data, plot_title='Size of overlap', add
 
     p <- p +
       theme_cowplot() +
-      theme(plot.margin = margin(10,0,0,0),
+      background_grid(major = "y", minor = "y") +
+      theme(plot.margin = margin(0,0,0,0),
             axis.title.x = element_blank(),
             axis.text.x = element_blank(),
+            axis.ticks.x = element_blank(),
             axis.line.x = element_blank(),
             # axis.ticks.x = element_blank(),
             axis.title.y = element_blank(),
@@ -117,8 +120,8 @@ grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', 
     theme(axis.title.y = element_blank(),
           axis.title.x = element_blank(),
           axis.line = element_blank(),
-          axis.ticks = element_blank()) #+
-    #labs(x=plot_title)
+          axis.ticks = element_blank()) +
+    labs(x=plot_title)
   # just plots empty dots
 
   p <- p +
@@ -268,8 +271,8 @@ merge_upset_list <- function(plt_list){
                            plt_list$gridPlot,
                            plt_list$setPlotY,
                            design = layout ,
-                           widths = c(1, .375),
-                           heights = c(.375, 1))
+                           widths = c(1, .5),
+                           heights = c(.5, 1))
   return(merged_plt)
 
 }
