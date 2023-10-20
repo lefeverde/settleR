@@ -3,7 +3,8 @@ test_data <-
 load(test_data)
 
 test_that('box_intercepts_dims returns bounding box over the specified intersect_levels',{
-
+  r_version <- paste(R.version$major, R.version$minor, sep = ".")
+  skip_if(r_version == "4.3.0", "Skipping due to version conflict with scales")
   ul <- plotList(settler_object)
 
   box_dims <- box_intercepts_dims(ul$gridPlot, intersects_to_box =  'intersect_14')

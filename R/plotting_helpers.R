@@ -17,30 +17,37 @@
 #' @importFrom cowplot theme_cowplot background_grid
 #'
 #' @examples
-set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=FALSE){
+set_totals_bar_plot <- function(set_totals, plot_title='Total size of set', use_cowplot=FALSE){
   p <- ggplot(data=set_totals, aes(x=set_names, y=total_set_size)) +
     geom_bar(stat='identity', width = .5) +
     coord_flip() +
     theme_cowplot() +
     background_grid(major = "x", minor = "x") +
-    theme(plot.margin = margin(0,0,0,0),
-
+    theme(plot.margin = margin(0,10,0,0),
           axis.text.y = element_blank(),
           axis.line.y = element_blank(),
           axis.ticks.y = element_blank(),
-          axis.title.x = element_text(margin = margin(10,0,0,0)),
+          axis.title.x = element_text(margin = margin(5,0,0,0)),
           # axis.title.x = element_blank(),
           axis.title.y = element_blank())
-  if(add_label){
-    p <- p + geom_label(aes(y=total_set_size, label=total_set_size), hjust=-.1)
+
+  if(use_cowplot){
+    p <- p +
+      background_grid(major = "none", minor = "none") +
+      geom_label(aes(y=total_set_size, label=total_set_size), hjust=-.1)
+    axis_title <-  grobTree(textGrob(plot_title,
+                                     x=0.1,
+                                     y=1.05,
+                                     hjust=0,
+                                     gp=gpar(col="black",
+                                             fontsize=15,
+                                             fontface="bold")))
+    p <- p + annotation_custom(axis_title)
   }
 
   p <- p +
     scale_y_continuous(expand = expansion(mult = c(0, .1))) +
     labs(y=plot_title)
-
-
-
 
   return(p)
 
@@ -60,40 +67,44 @@ set_totals_bar_plot <- function(set_totals, plot_title='Size of set', add_label=
 #' @importFrom cowplot theme_cowplot background_grid
 #'
 #' @examples
-intersect_bar_plot <- function(intersect_data, plot_title='Size of overlap', add_label=FALSE){
+intersect_bar_plot <- function(intersect_data, plot_title='Size of subset', use_cowplot=FALSE){
 
-    p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
-      geom_bar(stat='identity', width = .75)
-    if(add_label){
-      p <- p +
-        geom_richtext(aes(y=(intersect_set_size), label=intersect_set_size),angle = 45, vjust=-.05,hjust=-.05)
-    }
+  p <- ggplot(data=intersect_data, aes(x=intersect_id, y=intersect_set_size)) +
+    geom_bar(stat='identity', width = .75)
 
-      # geom_label_repel(aes(y=intersect_set_size,
-      #                      label=intersect_set_size),
-      #                  # vjust=1,
-      #                  min.segment.length=0) +
+  p <- p +
+    theme_cowplot() +
+    background_grid(major = "y", minor = "y") +
+    theme(plot.margin = margin(0,0,0,0),
+          axis.title.x = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.line.x = element_blank(),
+          # axis.ticks.x = element_blank(),
+          axis.title.y = element_blank(),
+          plot.title =  element_text(hjust = .5))
+  p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+    labs(title = plot_title)
 
-
-
-
+  if(use_cowplot){
     p <- p +
-      theme_cowplot() +
-      background_grid(major = "y", minor = "y") +
-      theme(plot.margin = margin(0,0,0,0),
-            axis.title.x = element_blank(),
-            axis.text.x = element_blank(),
-            axis.ticks.x = element_blank(),
-            axis.line.x = element_blank(),
-            # axis.ticks.x = element_blank(),
-            axis.title.y = element_blank(),
-            plot.title =  element_text(hjust = .5))
-    p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1))) +
-       labs(title = plot_title)
+      geom_richtext(aes(y=(intersect_set_size),
+                        label=intersect_set_size), angle = 45, vjust=-.05,hjust=-.05)
+    p <- p +
+      background_grid(major = "none", minor = "none") +
+      theme(plot.margin = margin(10,0,0,0), aspect.ratio = .5)
+    p <- p + scale_y_continuous(expand = expansion(mult = c(0, .1)))
+    axis_title <-  grobTree(textGrob(plot_title,
+                                     x=0.35,
+                                     y=1.215,
+                                     hjust=0,
+                                     gp=gpar(col="black",
+                                             fontsize=15,
+                                             fontface="bold")))
+    p <- p + annotation_custom(axis_title)
+  }
 
-
-
-    return(p)
+  return(p)
 
 }
 
@@ -109,7 +120,7 @@ intersect_bar_plot <- function(intersect_data, plot_title='Size of overlap', add
 #' @importFrom cowplot theme_cowplot
 #'
 #' @examples
-grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', colMap=NULL){
+grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', colMap=NULL, use_cowplot=FALSE){
   v_max <- max(1, length(unique(grid_data$intersect_id)) -1)
   v_breaks <- seq(1, v_max, by = 1)+ .5
   h_max <- max(1, length(unique(grid_data$set_names)) - 1)
@@ -141,9 +152,7 @@ grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', 
     geom_vline(xintercept = v_breaks) +
     geom_hline(yintercept = h_breaks)
 
-  # scale_y_discrete(label=function(x){
-  #   stringr::str_trunc(x, width = 20, side = 'center')
-    # })
+
   if(!is.null(colMap)){
     text_colours <- colMap[match( levels(grid_data$set_names), names(colMap))]
     p <- p + theme(axis.text.y = element_text(colour=text_colours))
@@ -155,6 +164,9 @@ grid_dot_plot <- function(grid_data, dot_size=4.25, plot_title='Overlap index', 
           axis.text.x = element_text(size=dot_size*2,
                                      face='bold')
   )
+  if(use_cowplot){
+    p <- p + theme(aspect.ratio = .5)
+  }
   return(p)
 }
 
@@ -219,7 +231,11 @@ cowplot_merge_upset_list <- function(plt_list, margSize=5){
               n_distinct(set_names)) %>%
     setNames(., c('x', 'y'))
 
+
+
   # converts to grob and hardcodes the size
+
+
   pmain <- plt_list$gridPlot %>%
     ggplotGrob(.) %>%
     set_panel_size(.,

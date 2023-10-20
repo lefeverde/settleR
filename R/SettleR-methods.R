@@ -57,13 +57,23 @@ make_settleR_plots <- function(settleRObject){
   # merge them to create the SettleR plot.
   gridPlot <-
     grid_dot_plot(gridData,
-                  colMap = colMap(settleRObject))
-  intersectPlotX <- intersect_bar_plot(intersectData)
-  setPlotY <- set_totals_bar_plot(setTotals)
+                  colMap = colMap(settleRObject),
+                  use_cowplot=settleRObject@use_cowplot)
+  intersectPlotX <- intersect_bar_plot(intersectData,
+                                       use_cowplot=settleRObject@use_cowplot)
+  setPlotY <- set_totals_bar_plot(setTotals,
+                                  use_cowplot=settleRObject@use_cowplot)
 
   plt_list <- list(gridPlot, intersectPlotX, setPlotY) %>%
     setNames(., c('gridPlot','intersectPlotX','setPlotY') )
-  plt_list[['settleRPlot']] <- merge_upset_list(plt_list)
+
+  # Merge via cowplot if set otherwise use patchwork
+  if(settleRObject@use_cowplot){
+    plt_list[['settleRPlot']] <- cowplot_merge_upset_list(plt_list)
+  } else {
+    plt_list[['settleRPlot']] <- merge_upset_list(plt_list)
+  }
+
   plotList(settleRObject) <- plt_list
   return(settleRObject)
 }

@@ -17,7 +17,8 @@ SettleR <- function(setList,
                     intersectLevels=NULL,
                     setLevels=NULL,
                     nIntersects=15,
-                    colMap=NULL){
+                    colMap=NULL,
+                    use_cowplot=FALSE){
 
   binaryMat <- sets_to_matrix(setList)
   countDf <- create_count_df(binaryMat)
@@ -79,7 +80,8 @@ SettleR <- function(setList,
                     setTotals=setTotals,
                     setLevels=setLevels,
                     colMap=colMap,
-                    intersectLevels=intersectLevels)
+                    intersectLevels=intersectLevels,
+                    use_cowplot=use_cowplot)
   # Kind of a kludge.
   # Basically, I create the class with empty plotList
   # and then
@@ -102,7 +104,7 @@ SettleR <- function(setList,
 NULL
 
 # TODO create nest of raw data, and settleRdata
-# So it's consistant with plotList
+# So it's consistent with plotList
 ### Class ####
 
 #' SettleR class
@@ -123,6 +125,7 @@ NULL
 #' @slot colMap character.
 #' @slot intersectLevels character.
 #' @slot nIntersects numeric.
+#' @slot use_cowplot logical
 #'
 #' @name SettleR-class
 #' @rdname SettleR-class
@@ -144,7 +147,8 @@ setClass('SettleR',
            setLevels='character',
            colMap='character',
            intersectLevels='character',
-           nIntersects='numeric'
+           nIntersects='numeric',
+           use_cowplot='logical'
          )
 )
 ### show ####
