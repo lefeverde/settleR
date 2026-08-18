@@ -14,9 +14,7 @@ devtools::install_github("lefeverde/settleR")
 This package allows [ggplot2](https://ggplot2.tidyverse.org) based UpSet style figures to be easily created. In a nutshell, these are plots which allow for set intersections to be visualized intuitively. These work the same as Venn/Euler diagrams but are much easier to understand when the number of sets is >4.
 
 <p align="center">
-
-![](https://raw.githubusercontent.com/lerde/settleR/master/example_settleR_plot.png
-
+  <img src="example_settleR_plot.png" height="400">
 </p>
 
 I created this package because at the time, I routinely needed to compare many different lists of genes and found that UpSet style plots were readily interpretable to a diverse audience but found the original UpSetR package too limited. I therefore developed this package primarily for my own use case. Since I originally created this package, several others have created similar R packages [see here for a list and comparison of the other packages](https://github.com/krassowski/complex-upset). There are a lot of overlapping features between these packages. In comparison, I've made extensive use of the S4 class system for SettleR to robustly organize all of the data and plots. This allowed me to build  in customizability not available in other packages, while being convenient to use for one-off visualizations.
